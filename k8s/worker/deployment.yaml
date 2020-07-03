@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_backend_release:latest
+        command: ["celery", "worker", "-Aviewer", "-ldebug", "-Pthreads", "-c4"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        env:
+        - name: CELERY_BROKER_URL
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: redis_url
+        - name: CELERY_RESULT_BACKEND
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: redis_url
+        - name: GITHUB_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: github_client_id
+        - name: GITHUB_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: github_client_secret
+        - name: GITHUB_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: github_webhook_secret
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: database_url
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: secret_key
+        envFrom:
+        - configMapRef:
+            name: config

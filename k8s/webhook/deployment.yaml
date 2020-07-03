@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webhook
+  template:
+    metadata:
+      labels:
+        app: webhook
+    spec:
+      containers:
+      - name: webhook
+        image: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_backend_release:latest
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health?format=json
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 25
+          timeoutSeconds: 20
+        env:
+        - name: CELERY_BROKER_URL
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: redis_url
+        - name: CELERY_RESULT_BACKEND
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: redis_url
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: database_url
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: secret_key
+        - name: GITHUB_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: github_client_id
+        - name: GITHUB_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: github_client_secret
+        - name: GITHUB_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: github_webhook_secret
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: webapi
+              key: sentry_dsn
+        envFrom:
+        - configMapRef:
+            name: config
