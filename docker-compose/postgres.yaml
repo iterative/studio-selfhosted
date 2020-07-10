@@ -5,9 +5,9 @@ services:
     image: postgres:12.2-alpine
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-pwd111}
-      POSTGRES_DB: ${DB_NAME:-database}
+      POSTGRES_DB: ${DB_NAME:-dvc}
     ports:
-      - ${DB_PORT:-5432}:5432
+      - 5432:5432
 
   api:
     depends_on:
