@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ./ui/deployment.yaml
+- ./ui/service.yaml
+- ./webapi/deployment.yaml
+- ./webapi/service.yaml
+- ./worker/deployment.yaml
+
+images:
+- name: dvc-viewer/ui
+  newName: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_ui_release
+  newTag: latest
+- name: dvc-viewer/backend
+  newName: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_ui_backend
+  newTag: latest

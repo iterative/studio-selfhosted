@@ -1,20 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker
+  name: dvc-viewer-worker
+  labels:
+    app.kubernetes.io/name: dvc-viewer-worker
+    app.kubernetes.io/part-of: dvc-viewer
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/company: iterative.ai
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: worker
+      app.kubernetes.io/name: dvc-viewer-worker
   template:
     metadata:
       labels:
-        app: worker
+        app.kubernetes.io/name: dvc-viewer-worker
     spec:
       containers:
       - name: worker
-        image: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_backend_release:latest
+        image: dvc-viewer/backend
         command: ["celery", "worker", "-Aviewer", "-ldebug", "-Pthreads", "-c4"]
         resources:
           requests:
@@ -27,38 +32,38 @@ spec:
         - name: CELERY_BROKER_URL
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: redis_url
         - name: CELERY_RESULT_BACKEND
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: redis_url
         - name: GITHUB_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: github_client_id
         - name: GITHUB_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: github_client_secret
         - name: GITHUB_WEBHOOK_SECRET
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: github_webhook_secret
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: database_url
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: secret_key
         envFrom:
         - configMapRef:
-            name: config
+            name: dvc-viewer-config
