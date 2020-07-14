@@ -1,20 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ui
+  name: dvc-viewer-ui
+  labels:
+    app.kubernetes.io/name: dvc-viewer-ui
+    app.kubernetes.io/part-of: dvc-viewer
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/company: iterative.ai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ui
+      app.kubernetes.io/name: dvc-viewer-ui
   template:
     metadata:
       labels:
-        app: ui
+        app.kubernetes.io/name: dvc-viewer-ui
     spec:
       containers:
       - name: ui
-        image: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_ui_release:latest
+        image: dvc_viewer/ui
         ports:
         - containerPort: 3000
         resources:
@@ -38,4 +43,4 @@ spec:
           timeoutSeconds: 10
         envFrom:
         - configMapRef:
-            name: config
+            name: dvc-viewer-config

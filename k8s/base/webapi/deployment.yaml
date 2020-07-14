@@ -1,20 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webapi
+  name: dvc-viewer-webapi
+  labels:
+    app.kubernetes.io/name: dvc-viewer-webapi
+    app.kubernetes.io/part-of: dvc-viewer
+    app.kubernetes.io/component: webapi
+    app.kubernetes.io/company: iterative.ai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: webapi
+      app.kubernetes.io/name: dvc-viewer-webapi
   template:
     metadata:
       labels:
-        app: webapi
+        app.kubernetes.io/name: dvc-viewer-webapi
     spec:
       containers:
       - name: webapi
-        image: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_backend_release:latest
+        image: dvc-viewer/backend 
         ports:
         - containerPort: 8000
         resources:
@@ -42,38 +47,38 @@ spec:
         - name: CELERY_BROKER_URL
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: redis_url
         - name: CELERY_RESULT_BACKEND
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: redis_url
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: database_url
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: secret_key
         - name: GITHUB_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: github_client_id
         - name: GITHUB_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: github_client_secret
         - name: GITHUB_WEBHOOK_SECRET
           valueFrom:
             secretKeyRef:
-              name: webapi
+              name: dvc-viewer-secret
               key: github_webhook_secret
         envFrom:
         - configMapRef:
-            name: config
+            name: dvc-viewer-config

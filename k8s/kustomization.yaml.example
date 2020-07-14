@@ -1,0 +1,79 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ./base
+# If you would like install with redis and postgres
+# comment line above and uncomment line below
+# - ./with-storages
+
+configMapGenerator:
+- name: dvc-viewer-config
+  literals:
+  # REQUIRED
+  # API endpoint that is used by frontend
+  # url
+  - API_URL=
+  # REQUIRED
+  # UI endpoint that is used by webapi
+  # url
+  - UI_URL=
+  # REQUIRED, LEGACY
+  # Will be removed in the next releases
+  # Substitute $(API_URL) value
+  - LOGIN_ERROR_URL=$(API_URL)/
+  - LOGIN_REDIRECT_URL=$(API_URL)/dashboard
+  - LOGOUT_REDIRECT_URL=$(API_URL)/
+  - CORS_ORIGIN_WHITELIST=$(API_URL)
+
+  # Django option
+  # https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts
+  - ALLOWED_HOSTS='*'
+  # Debug flag is used for Django app
+  # https://docs.djangoproject.com/en/3.0/ref/settings/#debug
+  # string (python bool)
+  - DEBUG="False"
+  # Environment for the service
+  # string
+  - ENV=prod
+  # Django option
+  # https://docs.djangoproject.com/en/3.0/ref/settings/#use-x-forwarded-host
+  - USE_X_FORWARDED_HOST="True"
+
+
+secretGenerator:
+- name: dvc-viewer-secret
+  literals:
+  # REQUIRED
+  # PostgreSQL database url
+  # url
+  - database_url=
+  # REQUIRED
+  # Github OAuth Client ID
+  # string
+  - github_client_id=
+  # REQUIRED
+  # Github OAuth Secret Key
+  # string
+  - github_client_secret=
+  # REQUIRED
+  # Redis url
+  # url
+  - redis_url=
+  # REQUIRED
+  # Django Secret Key
+  # string
+  - secret_key=
+
+  # Github webhook secret
+  # string
+  - github_webhook_secret=
+
+
+images:
+- name: dvc-viewer/ui
+  newName: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_ui_release
+  newTag: latest
+- name: dvc-viewer/backend
+  newName: 260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_ui_backend
+  newTag: latest
