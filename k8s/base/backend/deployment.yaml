@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dvc-viewer-webapi
+  name: dvc-viewer-backend
   labels:
-    app.kubernetes.io/name: dvc-viewer-webapi
+    app.kubernetes.io/name: dvc-viewer-backend
     app.kubernetes.io/part-of: dvc-viewer
-    app.kubernetes.io/component: webapi
+    app.kubernetes.io/component: backend
     app.kubernetes.io/company: iterative.ai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: dvc-viewer-webapi
+      app.kubernetes.io/name: dvc-viewer-backend
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: dvc-viewer-webapi
+        app.kubernetes.io/name: dvc-viewer-backend
     spec:
       containers:
-      - name: webapi
-        image: dvc-viewer/backend 
+      - name: backend
+        image: dvc-viewer-backend 
         ports:
         - containerPort: 8000
         resources:

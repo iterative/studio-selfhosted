@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export DVC_VIEWER_BACKEND_IMAGE=260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_backend_release
-export DVC_VIEWER_UI_IMAGE=260760892802.dkr.ecr.us-east-2.amazonaws.com/dvc_viewer_ui_release
+export DVC_VIEWER_BACKEND_IMAGE=docker.iterative.ai/viewer_backend
+export DVC_VIEWER_UI_IMAGE=docker.iterative.ai/viewer_ui
 export DVC_VIEWER_RELEASE_VERSION=v0.7.0
 
 EXEC="docker-compose --no-ansi"
