@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: dvc-viewer/backend
+        image: dvc-viewer-backend
         command: ["celery", "worker", "-Aviewer", "-ldebug", "-Pthreads", "-c4"]
         resources:
           requests:

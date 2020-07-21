@@ -24,6 +24,11 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+        env:
+        - name: POSTGRES_DB
+          value: dvc
+        - name: POSTGRES_PASSWORD
+          value: for_development_purpose
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:

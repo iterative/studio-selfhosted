@@ -10,8 +10,8 @@ metadata:
 spec:
   ports:
   - name: postgres
-    port: 6379
-    targetPort: 6379
+    port: 5432
+    targetPort: 5432
     protocol: TCP
   selector:
     app.kubernetes.io/name: dvc-viewer-postgres
