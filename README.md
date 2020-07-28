@@ -4,7 +4,8 @@ Bootstrap for running your own DVC Viewer
 
 ## Getting Started
 
-1. Create [Github OAuth](./docs/02-github-oauth.md)
+1. Choose what UI_URL you will make Viewer available from to its users. Additionally, you need to choose the API_URL which Viewer can access its API from. These two URLs need to be in a situation to share cookies (EG: same host and different port or API being a subdomain of the UI), and you need to pass them to Viewer as environment variables. *Note: Viewer will not set a reverse proxy up for you -- if you set these variables, Viewer will assume that you have done this yourself*.
+2. Create [Github OAuth](./docs/02-github-oauth.md)
 
 ### with docker-compose
 
