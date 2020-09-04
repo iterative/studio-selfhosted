@@ -31,7 +31,7 @@ it's deployment manifests:
 | Variable name         | Default value    | Description                 |
 | --------------------- | ---------------- | --------------------------- |
 | `UI_URL`              | `localhost:3000` | The main Viewer URL         |
-| `API_URL`             | `localhost:8000` | Viewer back-end URL         |
+| `API_URL`             | `localhost:8000/api` | Viewer back-end URL         |
 | `GITHUB_CLIENT_ID`\*  |                  | Github OAuth app client ID  |
 | `GITHIB_SECRET_KEY`\* |                  | Github OAuth app secret key |
 
