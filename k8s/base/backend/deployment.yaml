@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: dvc-viewer-backend 
+        image: dvc-viewer-backend
         ports:
         - containerPort: 8000
         resources:
@@ -79,6 +79,16 @@ spec:
             secretKeyRef:
               name: dvc-viewer-secret
               key: github_webhook_secret
+        - name: GITLAB_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: dvc-viewer-secret
+              key: gitlab_client_id
+        - name: GITLAB_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dvc-viewer-secret
+              key: gitlab_client_secret
         envFrom:
         - configMapRef:
             name: dvc-viewer-config

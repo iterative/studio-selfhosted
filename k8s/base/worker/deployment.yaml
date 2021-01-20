@@ -23,11 +23,11 @@ spec:
         command: ["celery", "worker", "-Aviewer", "-ldebug", "-Pthreads", "-c4"]
         resources:
           requests:
-            cpu: 100m
-            memory: 128Mi
+            cpu: 400m
+            memory: 512Mi
           limits:
-            cpu: 200m
-            memory: 256Mi
+            cpu: 800m
+            memory: 1024Mi
         env:
         - name: CELERY_BROKER_URL
           valueFrom:
@@ -39,6 +39,11 @@ spec:
             secretKeyRef:
               name: dvc-viewer-secret
               key: redis_url
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: dvc-viewer-secret
+              key: database_url
         - name: GITHUB_CLIENT_ID
           valueFrom:
             secretKeyRef:
@@ -54,11 +59,21 @@ spec:
             secretKeyRef:
               name: dvc-viewer-secret
               key: github_webhook_secret
-        - name: DATABASE_URL
+        - name: GITLAB_CLIENT_ID
           valueFrom:
             secretKeyRef:
               name: dvc-viewer-secret
-              key: database_url
+              key: gitlab_client_id
+        - name: GITLAB_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dvc-viewer-secret
+              key: gitlab_client_secret
+        - name: MAILGUN_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: dvc-viewer-secret
+              key: mailgun_access_key
         - name: SECRET_KEY
           valueFrom:
             secretKeyRef:

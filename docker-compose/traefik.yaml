@@ -1,0 +1,20 @@
+version: "3.4"
+
+services:
+  traefik:
+    image: traefik:2.3
+    command:
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  api:
+    labels:
+      - traefik.http.routers.api.rule=(Host(`${VIEWER_HOSTNAME}`) && PathPrefix(`/api`))
+
+  ui:
+    labels:
+      - traefik.http.routers.ui.rule=Host(`${VIEWER_HOSTNAME}`)

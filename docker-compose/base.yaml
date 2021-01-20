@@ -5,33 +5,31 @@ services:
     image: ${DVC_VIEWER_BACKEND_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
     environment:
       ALLOWED_HOSTS: "*"
-      UI_URL: http://localhost:3000
       SOCIAL_AUTH_REDIRECT_IS_HTTPS: "False"
 
-      # legacy
-      MIGRATE_DB: "1"
-      LOGIN_REDIRECT_URL: http://localhost:3000/dashboard
-      LOGIN_ERROR_URL: http://localhost:3000/
-      LOGOUT_REDIRECT_URL: http://localhost:3000/
-      CORS_ORIGIN_WHITELIST: http://localhost:3000/
-
       <<: &base_settings
-        SECRET_KEY: ${SECRET_KEY:-"sjwx00s&zu5yz&r(fh4i7pi6c4ukf!9a17rdgyfbfwfo#w%9%0"}
-        DATABASE_URL: ${POSTGRES_URL:-psql://postgres:pwd111@postgres:5432/dvc}
-        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
-        GITHUB_SECRET_KEY: ${GITHUB_SECRET_KEY}
-        GITHUB_WEBHOOK_URL: ${GITHUB_WEBHOOK_URL:-""}
-        GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-""}
-        # other services deps
         CELERY_BROKER_URL: ${REDIS_URL:-redis://redis:6379}
         CELERY_RESULT_BACKEND: ${REDIS_URL:-redis://redis:6379}
+        DATABASE_URL: ${POSTGRES_URL:-psql://postgres:pwd111@postgres:5432/dvc}
+        SECRET_KEY: ${SECRET_KEY:-"sjwx00s&zu5yz&r(fh4i7pi6c4ukf!9a17rdgyfbfwfo#w%9%0"}
+        UI_URL: ${UI_URL:-http://localhost:3000}
+
+        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-""}
+        GITHUB_SECRET_KEY: ${GITHUB_SECRET_KEY:-""}
+        GITHUB_WEBHOOK_URL: ${GITHUB_WEBHOOK_URL:-}
+        GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
+
+        GITLAB_CLIENT_ID: ${GITLAB_CLIENT_ID:-}
+        GITLAB_SECRET_KEY: ${GITLAB_SECRET_KEY:-}
+        GITLAB_WEBHOOK_URL: ${GITLAB_WEBHOOK_URL:-}
+        GITLAB_WEBHOOK_SECRET: ${GITLAB_WEBHOOK_SECRET:-}
     ports:
       - 8000:8000
   ui:
     image: ${DVC_VIEWER_UI_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
     environment:
-      API_URL: http://localhost:8000/api
-      FLAGS: ${FLAGS:-""}
+      API_URL: ${API_URL:-http://localhost:8000/api}
+      FLAGS: ${FLAGS:-}
     ports:
       - 3000:3000
 

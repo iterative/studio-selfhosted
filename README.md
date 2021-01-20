@@ -10,30 +10,18 @@ deployment scenarios.
 
 ### Getting the OAuth apps
 
-In order to run Viewer on premise, you'll need to setup your own Github (or
-Gitlab) OAuth apps and provide their credentials to the Viewer to use.
+In order to run Viewer on premise, you'll need to setup your own Github or
+Gitlab OAuth apps and provide their credentials to the Viewer to use.
 
 #### Github OAuth app
 
 Please follow [this guide](./docs/02-github-oauth.md) to setup your own Github
 OAuth app.
 
-During the setup process, you'll need to provide your on-premise Viewer's
-homepage and login redirect URL. You can change those URLs in the app's settings
-after the initial setup, but you need to make sure those URLS match the FQDN
-you'll host Viewer on: see **Settings and Customization** for details.
+#### GitLab OAuth app
 
-## Settings and Customization
-
-Viewer expects several configuration parameters to be set in the environment, or
-it's deployment manifests:
-
-| Variable name         | Default value    | Description                 |
-| --------------------- | ---------------- | --------------------------- |
-| `UI_URL`              | `localhost:3000` | The main Viewer URL         |
-| `API_URL`             | `localhost:8000/api` | Viewer back-end URL         |
-| `GITHUB_CLIENT_ID`\*  |                  | Github OAuth app client ID  |
-| `GITHIB_SECRET_KEY`\* |                  | Github OAuth app secret key |
+Please follow [the official guide](https://docs.gitlab.com/ee/integration/oauth_provider.html) to set it up.  
+Redirect URI shoulde be **${API_URL}/complete/gitlab/**, see [Settings and Customization](https://github.com/iterative/viewer-onpremise/blob/master/docs/01-env-variables.md) for details.
 
 ## Deployment
 
@@ -52,11 +40,13 @@ Viewer will be deployed to on premise.
    ```
    $ docker login -u trial -p letmetakealook docker.iterative.ai
    ```
-3. Launch `GITHUB_CLIENT_ID=.. GITHUB_SECRET_KEY=.. ./start.sh` with variables
+3. Configure `GITHUB_CLIENT_ID=.. GITHUB_SECRET_KEY=.. ./install.sh` with variables
    from previous steps.
+   More info `./install --help`
+4. Launch the stack `docker-compose up`
 
-Please see [`docker-compose`](/docker-compose/) for more details and compose
-files.
+Please see [`docker-compose`](/docker-compose/) and generated `docker-compose.yaml` for more details.
+
 
 ### Deploying to K8s
 

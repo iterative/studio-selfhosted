@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
 - ./base
 # If you would like install without redis and postgres
-# comment line below
+# delete line below
 - ./storages
 
 configMapGenerator:
@@ -18,14 +18,6 @@ configMapGenerator:
   # UI endpoint that is used by backend
   # url
   - UI_URL=http://localhost:3000
-  # REQUIRED, LEGACY
-  # Will be removed in the next releases
-  # Substitute $(UI_URL) value
-  - LOGIN_ERROR_URL=http://localhost:3000/
-  - LOGIN_REDIRECT_URL=http://localhost:3000/dashboard
-  - LOGOUT_REDIRECT_URL=http://localhost:3000/
-  - CORS_ORIGIN_WHITELIST=http://localhost:3000
-  - MIGRATE_DB=1
   # REQUIRED to be True in production
   - SOCIAL_AUTH_REDIRECT_IS_HTTPS="False"
 
@@ -51,14 +43,22 @@ secretGenerator:
   # PostgreSQL database url
   # url
   - database_url=psql://postgres:for_development_purpose@dvc-viewer-postgres.default.svc.cluster.local:5432/dvc # when ./storages is enabled
-  # REQUIRED
+  # REQUIRED if Github
   # Github OAuth Client ID
   # string
   - github_client_id=
-  # REQUIRED
+  # REQUIRED if Github
   # Github OAuth Secret Key
   # string
   - github_client_secret=
+  # REQUIRED if GitLab
+  # GitLab OAuth Client ID
+  # string
+  - gitlab_client_id=
+  # REQUIRED if GitLab
+  # GitLab OAuth Secret Key
+  # string
+  - gitlab_client_secret=
   # REQUIRED
   # Redis url
   # url
@@ -73,12 +73,14 @@ secretGenerator:
   # > ruby -rsecurerandom -e 'puts SecureRandom.hex(20)'
   # string
   - github_webhook_secret=
+  - gitlab_webhook_secret=
+  - mailgun_access_key=
 
 
 images:
 - name: dvc-viewer-ui
   newName: docker.iterative.ai/viewer_ui
-  newTag: v0.7.0
+  newTag: v0.17.0
 - name: dvc-viewer-backend
   newName: docker.iterative.ai/viewer_backend
-  newTag: v0.7.0
+  newTag: v0.17.0

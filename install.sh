@@ -2,16 +2,14 @@
 
 export DVC_VIEWER_BACKEND_IMAGE=docker.iterative.ai/viewer_backend
 export DVC_VIEWER_UI_IMAGE=docker.iterative.ai/viewer_ui
-export DVC_VIEWER_RELEASE_VERSION=v0.7.0
+export DVC_VIEWER_RELEASE_VERSION=v0.17.0
 
 EXEC="docker-compose --no-ansi"
 MANIFESTS=(-f ./docker-compose/base.yaml)
 
 RELEASED_VERSIONS=(
   latest
-  v0.7.0
-  v0.6.1
-  v0.6.0
+  v0.17.0
 )
 
 declare -a env_errors
@@ -23,30 +21,35 @@ usage () {
   echo "  --ascii"
   echo "  --no-postgres"
   echo "  --no-redis"
-  echo "  --release-version v0.5.1"
+  echo "  --release-version v0.16.0"
+  echo "  --hostname viewer.dvc.org"
 }
 
 print_supported_envs () {
   echo "Supported envs:"
   echo "  GITHUB_CLIENT_ID*"
   echo "  GITHUB_SECRET_KEY*"
-  echo
   echo "  GITHUB_WEBHOOK_URL"
   echo "  GITHUB_WEBHOOK_SECRET"
+  echo
+  echo "  GITLAB_CLIENT_ID**"
+  echo "  GITLAB_SECRET_KEY**"
+  echo "  GITLAB_WEBHOOK_URL"
+  echo "  GITLAB_WEBHOOK_SECRET"
   echo
   echo "  POSTGRES_URL"
   echo "  REDIS_URL"
   echo
-  echo "* - required"
+  echo "*/** - required any of"
 }
 
 check_requirements() {
-  if [ -z "$GITHUB_CLIENT_ID" ]; then
-    env_errors+=("MUST provide GITHUB_CLIENT_ID env")
+  if [ -z "$GITHUB_CLIENT_ID" -a -z "$GITLAB_CLIENT_ID" ]; then
+    env_errors+=("MUST provide either GITHUB_CLIENT_ID or GITLAB_CLIENT_ID env")
   fi
 
-  if [ -z "$GITHUB_SECRET_KEY" ]; then
-    env_errors+=("MUST provide GITHUB_SECRET_KEY env")
+  if [ -z "$GITHUB_SECRET_KEY" -a -z "$GITLAB_SECRET_KEY" ]; then
+    env_errors+=("MUST provide either GITHUB_SECRET_KEY or GITLAB_SECRET_KEY env")
   fi
 }
 
@@ -68,6 +71,14 @@ while [ $# -ne 0 ]; do
       NO_REDIS=1
       shift 1
       ;;
+    --hostname)
+        shift 1
+        export VIEWER_HOSTNAME=$1
+        export UI_URL=http://${VIEWER_HOSTNAME}
+        export API_URL=http://${VIEWER_HOSTNAME}/api
+        MANIFESTS+=(-f ./docker-compose/traefik.yaml)
+        shift 1
+        ;;
     -h|--help)
       usage
       exit 0
@@ -116,5 +127,9 @@ if [ ${#env_errors[@]} -ne 0 ]; then
   exit 1
 fi
 
-set -ex
-$EXEC ${MANIFESTS[@]} up $@
+$EXEC ${MANIFESTS[@]} config $@ > docker-compose.yaml
+
+echo
+echo "Application was configures"
+echo "Launch with "
+echo "> docker-compose up"
