@@ -2,14 +2,16 @@
 
 export DVC_VIEWER_BACKEND_IMAGE=docker.iterative.ai/viewer_backend
 export DVC_VIEWER_UI_IMAGE=docker.iterative.ai/viewer_ui
-export DVC_VIEWER_RELEASE_VERSION=v0.17.0
+export DVC_VIEWER_RELEASE_VERSION=latest
 
 EXEC="docker-compose --no-ansi"
 MANIFESTS=(-f ./docker-compose/base.yaml)
 
 RELEASED_VERSIONS=(
   latest
-  v0.17.0
+  v0.26.1
+  v0.26.0
+  v0.25.0
 )
 
 declare -a env_errors
@@ -21,7 +23,7 @@ usage () {
   echo "  --ascii"
   echo "  --no-postgres"
   echo "  --no-redis"
-  echo "  --release-version v0.16.0"
+  echo "  --release-version v0.26.0"
   echo "  --hostname viewer.dvc.org"
 }
 
@@ -32,10 +34,15 @@ print_supported_envs () {
   echo "  GITHUB_WEBHOOK_URL"
   echo "  GITHUB_WEBHOOK_SECRET"
   echo
+  echo "  GITLAB_URL"
   echo "  GITLAB_CLIENT_ID**"
   echo "  GITLAB_SECRET_KEY**"
   echo "  GITLAB_WEBHOOK_URL"
   echo "  GITLAB_WEBHOOK_SECRET"
+  echo
+  echo "  BITBUCKET_CLIENT_ID"
+  echo "  BITBUCKET_SECRET_KEY"
+  echo "  BITBUCKET_WEBHOOK_URL"
   echo
   echo "  POSTGRES_URL"
   echo "  REDIS_URL"
@@ -43,14 +50,24 @@ print_supported_envs () {
   echo "*/** - required any of"
 }
 
-check_requirements() {
-  if [ -z "$GITHUB_CLIENT_ID" -a -z "$GITLAB_CLIENT_ID" ]; then
-    env_errors+=("MUST provide either GITHUB_CLIENT_ID or GITLAB_CLIENT_ID env")
+init_scm_providers() {
+  declare -a PROVIDERS
+  if [ -n "$GITHUB_CLIENT_ID" ]; then
+    PROVIDERS+=("github")
   fi
 
-  if [ -z "$GITHUB_SECRET_KEY" -a -z "$GITLAB_SECRET_KEY" ]; then
-    env_errors+=("MUST provide either GITHUB_SECRET_KEY or GITLAB_SECRET_KEY env")
+  if [ -n "$GITLAB_CLIENT_ID" ]; then
+    PROVIDERS+=("gitlab")
   fi
+
+  if [ -n "$BITBUCKET_CLIENT_ID" ]; then
+    PROVIDERS+=("bitbucket")
+  fi
+
+  if [ ${#PROVIDERS[@]} -eq 0 ]; then
+    env_errors+=("MUST provide either GITHUB_CLIENT_ID, GITLAB_CLIENT_ID or BITBUCKET_CLIENT_ID env")
+  fi
+  export SCM_PROVIDERS=`IFS=,; echo "${PROVIDERS[*]}"`
 }
 
 while [ $# -ne 0 ]; do
@@ -103,7 +120,7 @@ while [ $# -ne 0 ]; do
   esac
 done
 
-check_requirements
+init_scm_providers
 
 if [ "$NO_POSTGRES" != "1" ]; then
   MANIFESTS+=(-f ./docker-compose/postgres.yaml)

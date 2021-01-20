@@ -14,8 +14,8 @@ services:
         SECRET_KEY: ${SECRET_KEY:-"sjwx00s&zu5yz&r(fh4i7pi6c4ukf!9a17rdgyfbfwfo#w%9%0"}
         UI_URL: ${UI_URL:-http://localhost:3000}
 
-        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-""}
-        GITHUB_SECRET_KEY: ${GITHUB_SECRET_KEY:-""}
+        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+        GITHUB_SECRET_KEY: ${GITHUB_SECRET_KEY:-}
         GITHUB_WEBHOOK_URL: ${GITHUB_WEBHOOK_URL:-}
         GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
 
@@ -23,12 +23,18 @@ services:
         GITLAB_SECRET_KEY: ${GITLAB_SECRET_KEY:-}
         GITLAB_WEBHOOK_URL: ${GITLAB_WEBHOOK_URL:-}
         GITLAB_WEBHOOK_SECRET: ${GITLAB_WEBHOOK_SECRET:-}
+        GITLAB_URL: ${GITLAB_URL:-}
+
+        BITBUCKET_CLIENT_ID: ${BITBUCKET_CLIENT_ID:-}
+        BITBUCKET_SECRET_KEY: ${BITBUCKET_SECRET_KEY:-}
+        BITBUCKET_WEBHOOK_URL: ${BITBUCKET_WEBHOOK_URL:-}
     ports:
       - 8000:8000
   ui:
     image: ${DVC_VIEWER_UI_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
     environment:
       API_URL: ${API_URL:-http://localhost:8000/api}
+      SCM_PROVIDERS: ${SCM_PROVIDERS:-github,gitlab,bitbucket}
       FLAGS: ${FLAGS:-}
     ports:
       - 3000:3000

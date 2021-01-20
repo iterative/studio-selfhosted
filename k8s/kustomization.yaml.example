@@ -10,16 +10,24 @@ resources:
 configMapGenerator:
 - name: dvc-viewer-config
   literals:
-  # REQUIRED
+  # REQUIRED, legacy
   # API endpoint that is used by frontend = $(BACKEND_URL)/api
   # url
   - API_URL=http://localhost:8000/api
-  # REQUIRED
+  # REQUIRED, legacy
   # UI endpoint that is used by backend
   # url
   - UI_URL=http://localhost:3000
+  # REQUIRED
+  # UI endpoint
+  # url
+  - VIEWER_URL=http://localhost:3000
   # REQUIRED to be True in production
   - SOCIAL_AUTH_REDIRECT_IS_HTTPS="False"
+  # REQUIRED
+  # Supported SCM providers, depends on *_client_id
+  # list(string) - comma separated strings
+  - SCM_PROVIDERS=github,gitlab,bitbucket
 
   # Django option
   # https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts
@@ -34,6 +42,18 @@ configMapGenerator:
   # Django option
   # https://docs.djangoproject.com/en/3.0/ref/settings/#use-x-forwarded-host
   - USE_X_FORWARDED_HOST="True"
+  # Webhook url exposed to the internet
+  # url
+  - GITHUB_WEBHOOK_URL=
+  # Webhook url exposed to the internet
+  # url
+  - GITLAB_WEBHOOK_URL=
+  # Webhook url exposed to the internet
+  # url
+  - BITBUCKET_WEBHOOK_URL=
+  # Mailgun server name, when mailgun service is used
+  # domain
+  - MAILGUN_SERVER_NAME=
 
 
 secretGenerator:
@@ -43,6 +63,14 @@ secretGenerator:
   # PostgreSQL database url
   # url
   - database_url=psql://postgres:for_development_purpose@dvc-viewer-postgres.default.svc.cluster.local:5432/dvc # when ./storages is enabled
+  # REQUIRED if Bitbucket
+  # Bitbucket OAuth Client ID
+  # string
+  - bitbucket_client_id=
+  # REQUIRED if Bitbucket
+  # Bitbucket OAuth Secret Key
+  # string
+  - bitbucket_client_secret=
   # REQUIRED if Github
   # Github OAuth Client ID
   # string
@@ -80,7 +108,7 @@ secretGenerator:
 images:
 - name: dvc-viewer-ui
   newName: docker.iterative.ai/viewer_ui
-  newTag: v0.17.0
+  newTag: latest
 - name: dvc-viewer-backend
   newName: docker.iterative.ai/viewer_backend
-  newTag: v0.17.0
+  newTag: latest
