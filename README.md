@@ -38,7 +38,7 @@ Viewer will be deployed to on premise.
    run Viewer.
 2. [Login to the private registry](https://docs.docker.com/engine/reference/commandline/login/)
    ```
-   $ docker login -u trial -p letmetakealook docker.iterative.ai
+   $ docker login -u <login> -p <password> docker.iterative.ai
    ```
 3. Configure `GITHUB_CLIENT_ID=.. GITHUB_SECRET_KEY=.. ./install.sh` with variables
    from previous steps.
