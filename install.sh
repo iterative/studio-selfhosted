@@ -147,6 +147,6 @@ fi
 $EXEC ${MANIFESTS[@]} config $@ > docker-compose.yaml
 
 echo
-echo "Application was configures"
+echo "Application was configured"
 echo "Launch with "
 echo "> docker-compose up"

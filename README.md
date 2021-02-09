@@ -33,7 +33,7 @@ Viewer will be deployed to on premise.
 
 ### Deploying using Docker Compose
 
-1. Your infra needs to have
+1. Your infrastructure needs to have
    [docker-compose v1.25 or newer](https://docs.docker.com/compose/install/) to
    run Viewer.
 2. [Login to the private registry](https://docs.docker.com/engine/reference/commandline/login/)
