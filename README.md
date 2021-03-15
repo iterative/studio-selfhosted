@@ -62,8 +62,8 @@ minikube.
    ```
    $ kubectl create secret docker-registry dvc-viewer-aws \
      --docker-server=docker.iterative.ai \
-     --docker-username=trial \
-     --docker-password=letmetakealook
+     --docker-username=<login> \
+     --docker-password=<password>
    $ kubectl patch serviceaccount default -p '{"imagePullSecrets":[{"name":"dvc-viewer-aws"}]}'
    ```
 3. Bootstrap your own customization files:

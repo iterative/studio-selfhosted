@@ -20,6 +20,7 @@ usage () {
   echo "Usage: $0 [OPTIONS]"
   echo
   echo "OPTIONS:"
+  echo "  --envs"
   echo "  --ascii"
   echo "  --no-postgres"
   echo "  --no-redis"
@@ -46,6 +47,8 @@ print_supported_envs () {
   echo
   echo "  POSTGRES_URL"
   echo "  REDIS_URL"
+  echo "  API_URL"
+  echo "  UI_URL"
   echo
   echo "*/** - required any of"
 }

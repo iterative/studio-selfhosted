@@ -6,6 +6,7 @@ services:
     command:
       - "--providers.docker=true"
       - "--entrypoints.web.address=:80"
+    restart: always
     ports:
       - 80:80
     volumes:

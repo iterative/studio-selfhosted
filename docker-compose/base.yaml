@@ -3,6 +3,7 @@ version: "3.4"
 services:
   api:
     image: ${DVC_VIEWER_BACKEND_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
+    restart: always
     environment:
       ALLOWED_HOSTS: "*"
       SOCIAL_AUTH_REDIRECT_IS_HTTPS: "False"
@@ -30,8 +31,10 @@ services:
         BITBUCKET_WEBHOOK_URL: ${BITBUCKET_WEBHOOK_URL:-}
     ports:
       - 8000:8000
+
   ui:
     image: ${DVC_VIEWER_UI_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
+    restart: always
     environment:
       API_URL: ${API_URL:-http://localhost:8000/api}
       SCM_PROVIDERS: ${SCM_PROVIDERS:-github,gitlab,bitbucket}
@@ -40,9 +43,28 @@ services:
       - 3000:3000
 
   worker:
-    command: ["celery", "worker", "-Aviewer", "-linfo", "-Pthreads", "-c4"]
+    command:
+      - celery
+      - worker
+      - -Aviewer
+      - -linfo
+      - -Pthreads
+      - -c4
     image: ${DVC_VIEWER_BACKEND_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
+    restart: always
     deploy:
       replicas: 2
+    environment:
+      <<: *base_settings
+
+  beat:
+    command:
+      - celery
+      - beat
+      - -Aviewer
+      - -linfo
+      - -Sdjango_celery_beat.schedulers:DatabaseScheduler
+    image: ${DVC_VIEWER_BACKEND_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
+    restart: always
     environment:
       <<: *base_settings

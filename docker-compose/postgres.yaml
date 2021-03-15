@@ -3,6 +3,7 @@ version: "3.4"
 services:
   postgres:
     image: postgres:12.2-alpine
+    restart: always
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-pwd111}
       POSTGRES_DB: ${DB_NAME:-dvc}
@@ -10,6 +11,10 @@ services:
       - 5432:5432
 
   api:
+    depends_on:
+      - postgres
+
+  beat:
     depends_on:
       - postgres
 
