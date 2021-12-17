@@ -2,11 +2,14 @@ version: "3.4"
 
 services:
   api:
-    image: ${DVC_VIEWER_BACKEND_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    image: ${STUDIO_BACKEND_IMAGE}:${STUDIO_RELEASE_VERSION}
     restart: always
     environment:
       ALLOWED_HOSTS: "*"
       SOCIAL_AUTH_REDIRECT_IS_HTTPS: "False"
+      SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS: "localhost:3000,localhost:8000"
+      API_URL: ${API_URL:-http://localhost:8000/api}
 
       <<: &base_settings
         CELERY_BROKER_URL: ${REDIS_URL:-redis://redis:6379}
@@ -15,32 +18,48 @@ services:
         SECRET_KEY: ${SECRET_KEY:-"sjwx00s&zu5yz&r(fh4i7pi6c4ukf!9a17rdgyfbfwfo#w%9%0"}
         UI_URL: ${UI_URL:-http://localhost:3000}
 
-        GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
-        GITHUB_SECRET_KEY: ${GITHUB_SECRET_KEY:-}
+        GITHUB_APP_ID: ${GITHUB_APP_ID:-}
+        GITHUB_APP_CLIENT_ID: ${GITHUB_APP_CLIENT_ID:-}
+        GITHUB_APP_SECRET_KEY: ${GITHUB_APP_SECRET_KEY:-}
+        GITHUB_APP_PRIVATE_KEY_PEM: ${GITHUB_APP_PRIVATE_KEY_PEM:-}
+        GITHUB_URL: ${GITHUB_URL:-}
         GITHUB_WEBHOOK_URL: ${GITHUB_WEBHOOK_URL:-}
-        GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-}
+        GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-gitlab_secret}
 
         GITLAB_CLIENT_ID: ${GITLAB_CLIENT_ID:-}
         GITLAB_SECRET_KEY: ${GITLAB_SECRET_KEY:-}
+        GITLAB_URL: ${GITLAB_URL:-https://gitlab.com}
         GITLAB_WEBHOOK_URL: ${GITLAB_WEBHOOK_URL:-}
         GITLAB_WEBHOOK_SECRET: ${GITLAB_WEBHOOK_SECRET:-}
-        GITLAB_URL: ${GITLAB_URL:-}
 
         BITBUCKET_CLIENT_ID: ${BITBUCKET_CLIENT_ID:-}
         BITBUCKET_SECRET_KEY: ${BITBUCKET_SECRET_KEY:-}
+        BITBUCKET_API_URL: ${BITBUCKET_API_URL:-}
+        BITBUCKET_URL: ${BITBUCKET_URL:-}
         BITBUCKET_WEBHOOK_URL: ${BITBUCKET_WEBHOOK_URL:-}
+
+        MAX_VIEWS: ${MAX_VIEWS:-100}
+        MAX_TEAMS: ${MAX_TEAMS:-10}
     ports:
       - 8000:8000
+      - 3000:3000
 
   ui:
-    image: ${DVC_VIEWER_UI_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
+    image: ${STUDIO_UI_IMAGE}:${STUDIO_RELEASE_VERSION}
     restart: always
+    network_mode: service:api
     environment:
       API_URL: ${API_URL:-http://localhost:8000/api}
       SCM_PROVIDERS: ${SCM_PROVIDERS:-github,gitlab,bitbucket}
       FLAGS: ${FLAGS:-}
-    ports:
-      - 3000:3000
+
+      GITHUB_APP_NAME: ${GITHUB_APP_NAME:-}
+      GITHUB_URL: ${GITHUB_URL:-https://github.com}
+      GITLAB_URL: ${GITLAB_URL:-https://gitlab.com}
+      BITBUCKET_URL: ${BITBUCKET_URL:-https://bitbucket.org}
+
+      MAX_VIEWS: ${MAX_VIEWS:-100}
+      MAX_TEAMS: ${MAX_TEAMS:-10}
 
   worker:
     command:
@@ -50,11 +69,13 @@ services:
       - -linfo
       - -Pthreads
       - -c4
-    image: ${DVC_VIEWER_BACKEND_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
+    image: ${STUDIO_BACKEND_IMAGE}:${STUDIO_RELEASE_VERSION}
     restart: always
     deploy:
       replicas: 2
     environment:
+      NO_MIGRATE_DB: "1"
+      WAIT_FOR_MIGRATIONS: "1"
       <<: *base_settings
 
   beat:
@@ -64,7 +85,9 @@ services:
       - -Aviewer
       - -linfo
       - -Sdjango_celery_beat.schedulers:DatabaseScheduler
-    image: ${DVC_VIEWER_BACKEND_IMAGE}:${DVC_VIEWER_RELEASE_VERSION}
+    image: ${STUDIO_BACKEND_IMAGE}:${STUDIO_RELEASE_VERSION}
     restart: always
     environment:
+      NO_MIGRATE_DB: "1"
+      WAIT_FOR_MIGRATIONS: "1"
       <<: *base_settings

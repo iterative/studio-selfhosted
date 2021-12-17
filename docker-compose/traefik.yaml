@@ -14,8 +14,8 @@ services:
 
   api:
     labels:
-      - traefik.http.routers.api.rule=(Host(`${VIEWER_HOSTNAME}`) && PathPrefix(`/api`))
+      - traefik.http.routers.api.rule=(Host(`${STUDIO_HOSTNAME}`) && PathPrefix(`/api`))
 
   ui:
     labels:
-      - traefik.http.routers.ui.rule=Host(`${VIEWER_HOSTNAME}`)
+      - traefik.http.routers.ui.rule=Host(`${STUDIO_HOSTNAME}`)

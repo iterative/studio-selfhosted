@@ -1,20 +1,28 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-export DVC_VIEWER_BACKEND_IMAGE=docker.iterative.ai/viewer_backend
-export DVC_VIEWER_UI_IMAGE=docker.iterative.ai/viewer_ui
-export DVC_VIEWER_RELEASE_VERSION=latest
+if [ "${BASH_VERSINFO:-0}" -lt 4 ]; then
+  echo "ERROR: unsupported bash version, 4+ required"
+  exit
+fi
 
-EXEC="docker-compose --no-ansi"
+export STUDIO_BACKEND_IMAGE=docker.iterative.ai/viewer_backend
+export STUDIO_UI_IMAGE=docker.iterative.ai/viewer_ui
+export STUDIO_RELEASE_VERSION=latest
+
+EXEC="docker-compose --ansi never"
 MANIFESTS=(-f ./docker-compose/base.yaml)
 
 RELEASED_VERSIONS=(
   latest
-  v0.26.1
-  v0.26.0
-  v0.25.0
+  v0.59.1
+  v0.60.0
 )
 
 declare -a env_errors
+declare -A errors_msg
+errors_msg[GITHUB_WEBHOOK_URL]='Set GITHUB_WEBHOOK_URL, by default ${API_URL}/webhook/github-app/'
+errors_msg[GITLAB_WEBHOOK_URL]='Set GITLAB_WEBHOOK_URL, by default ${API_URL}/webhook/gitlab/'
+errors_msg[BITBUCKET_WEBHOOK_URL]='Set BITBUCKET_WEBHOOK_URL, by default ${API_URL}/webhook/bitbucket/'
 
 usage () {
   echo "Usage: $0 [OPTIONS]"
@@ -24,51 +32,46 @@ usage () {
   echo "  --ascii"
   echo "  --no-postgres"
   echo "  --no-redis"
-  echo "  --release-version v0.26.0"
-  echo "  --hostname viewer.dvc.org"
+  echo "  --release-version latest"
+  echo "  --hostname studio.example.com"
 }
 
 print_supported_envs () {
-  echo "Supported envs:"
-  echo "  GITHUB_CLIENT_ID*"
-  echo "  GITHUB_SECRET_KEY*"
-  echo "  GITHUB_WEBHOOK_URL"
-  echo "  GITHUB_WEBHOOK_SECRET"
-  echo
-  echo "  GITLAB_URL"
-  echo "  GITLAB_CLIENT_ID**"
-  echo "  GITLAB_SECRET_KEY**"
-  echo "  GITLAB_WEBHOOK_URL"
-  echo "  GITLAB_WEBHOOK_SECRET"
-  echo
-  echo "  BITBUCKET_CLIENT_ID"
-  echo "  BITBUCKET_SECRET_KEY"
-  echo "  BITBUCKET_WEBHOOK_URL"
-  echo
-  echo "  POSTGRES_URL"
-  echo "  REDIS_URL"
-  echo "  API_URL"
-  echo "  UI_URL"
-  echo
-  echo "*/** - required any of"
+  echo "To see supported environment variables please check docker-compose/base.yaml"
+}
+
+check_env_variable() {
+  eval v='$'$1
+  if [ -z "$v" ]; then
+    err=${errors_msg["$1"]:-"Missed $1"}
+    env_errors+=("$err")
+  fi
 }
 
 init_scm_providers() {
   declare -a PROVIDERS
-  if [ -n "$GITHUB_CLIENT_ID" ]; then
+  if [ -n "$GITHUB_APP_CLIENT_ID" ]; then
+    check_env_variable GITHUB_APP_ID
+    check_env_variable GITHUB_APP_SECRET_KEY
+    check_env_variable GITHUB_APP_PRIVATE_KEY_PEM
+    [ -n "$STUDIO_HOSTNAME" ] && check_env_variable GITHUB_WEBHOOK_URL
     PROVIDERS+=("github")
   fi
 
   if [ -n "$GITLAB_CLIENT_ID" ]; then
+    check_env_variable GITLAB_SECRET_KEY
+    [ -n "$STUDIO_HOSTNAME" ] && check_env_variable GITLAB_WEBHOOK_URL
     PROVIDERS+=("gitlab")
   fi
 
   if [ -n "$BITBUCKET_CLIENT_ID" ]; then
+    check_env_variable BITBUCKET_SECRET_KEY
+    [ -n "$STUDIO_HOSTNAME" ] && check_env_variable BITBUCKET_WEBHOOK_URL
     PROVIDERS+=("bitbucket")
   fi
 
   if [ ${#PROVIDERS[@]} -eq 0 ]; then
-    env_errors+=("MUST provide either GITHUB_CLIENT_ID, GITLAB_CLIENT_ID or BITBUCKET_CLIENT_ID env")
+    env_errors+=("MUST provide either GITHUB_APP_CLIENT_ID, GITLAB_CLIENT_ID or BITBUCKET_CLIENT_ID env")
   fi
   export SCM_PROVIDERS=`IFS=,; echo "${PROVIDERS[*]}"`
 }
@@ -93,9 +96,9 @@ while [ $# -ne 0 ]; do
       ;;
     --hostname)
         shift 1
-        export VIEWER_HOSTNAME=$1
-        export UI_URL=http://${VIEWER_HOSTNAME}
-        export API_URL=http://${VIEWER_HOSTNAME}/api
+        export STUDIO_HOSTNAME=$1
+        export UI_URL=http://${STUDIO_HOSTNAME}
+        export API_URL=http://${STUDIO_HOSTNAME}/api
         MANIFESTS+=(-f ./docker-compose/traefik.yaml)
         shift 1
         ;;
@@ -105,8 +108,8 @@ while [ $# -ne 0 ]; do
       ;;
     --release-version)
       shift 1
-      DVC_VIEWER_RELEASE_VERSION=$1
-      if [[ ! ${RELEASED_VERSIONS[@]} =~ " $DVC_VIEWER_RELEASE_VERSION " ]]; then
+      STUDIO_RELEASE_VERSION=$1
+      if [[ ! ${RELEASED_VERSIONS[@]} =~ "$STUDIO_RELEASE_VERSION" ]]; then
         echo "There is no such released version"
         echo "Supported versions:"
         ( IFS=$'\n'; echo "${RELEASED_VERSIONS[*]}" )
@@ -143,13 +146,13 @@ fi
 
 if [ ${#env_errors[@]} -ne 0 ]; then
   ( IFS=$'\n'; echo "${env_errors[*]}" )
-  echo "more info: $0 --envs"
+  echo
+  echo "To see supported environment variables please check docker-compose/base.yaml"
   exit 1
 fi
 
 $EXEC ${MANIFESTS[@]} config $@ > docker-compose.yaml
 
-echo
 echo "Application was configured"
-echo "Launch with "
+echo "Launch it with "
 echo "> docker-compose up"
