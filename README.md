@@ -1,6 +1,6 @@
-# DVC Viewer On-Premise
+# Studio On-Premise
 
-This repository contains recipes for you to run Iterative Viewer on your own
+This repository contains recipes for you to run Iterative Studio on your own
 infrastructure, using `docker-compose` or `k8s` or one of it's flavors.
 
 The guide will walk you through the preparation, customization, and basic
@@ -13,15 +13,14 @@ deployment scenarios.
 In order to run Viewer on premise, you'll need to setup your own Github or
 Gitlab OAuth apps and provide their credentials to the Viewer to use.
 
-#### Github OAuth app
+#### Github App
 
-Please follow [this guide](./docs/02-github-oauth.md) to setup your own Github
-OAuth app.
+You need to create your own [GitHub App](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps#about-github-apps) for being able to authorize on the provider side
 
 #### GitLab OAuth app
 
 Please follow [the official guide](https://docs.gitlab.com/ee/integration/oauth_provider.html) to set it up.  
-Redirect URI shoulde be **${API_URL}/complete/gitlab/**, see [Settings and Customization](https://github.com/iterative/viewer-onpremise/blob/master/docs/01-env-variables.md) for details.
+Redirect URI shoulde be **${API_URL}/complete/gitlab/**
 
 ## Deployment
 
@@ -40,7 +39,7 @@ Viewer will be deployed to on premise.
    ```
    $ docker login -u <login> -p <password> docker.iterative.ai
    ```
-3. Configure `GITHUB_CLIENT_ID=.. GITHUB_SECRET_KEY=.. ./install.sh` with variables
+3. Configure `GITHUB_APP_CLIENT_ID=.. GITHUB_SECRET_KEY=.. ./install.sh` with variables
    from previous steps.
    More info `./install --help`
 4. Launch the stack `docker-compose up`
