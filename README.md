@@ -16,11 +16,12 @@ Gitlab OAuth apps and provide their credentials to the Viewer to use.
 #### Github App
 
 You need to create your own [GitHub App](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps#about-github-apps) for being able to authorize on the provider side
+Redirect URI should be **${API_URL}/complete/gitlab/**
 
 #### GitLab OAuth app
 
 Please follow [the official guide](https://docs.gitlab.com/ee/integration/oauth_provider.html) to set it up.  
-Redirect URI shoulde be **${API_URL}/complete/gitlab/**
+Redirect URI should be **${API_URL}/complete/gitlab/**
 
 ## Deployment
 
@@ -45,46 +46,3 @@ Viewer will be deployed to on premise.
 4. Launch the stack `docker-compose up`
 
 Please see [`docker-compose`](/docker-compose/) and generated `docker-compose.yaml` for more details.
-
-
-### Deploying to K8s
-
-This guide is based on using manifests built wuth Kustomize. This section should
-work on any K8s compatible flavor, while the next section focuses on running on
-minikube.
-
-1. Install requirements:
-   - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-   - [kustomize v3.6.1+](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv3.6.1)
-2. Create k8s secret with the Docker Private Registry credentials:
-   [for docker regisry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#create-a-secret-by-providing-credentials-on-the-command-line)
-   ```
-   $ kubectl create secret docker-registry dvc-viewer-aws \
-     --docker-server=docker.iterative.ai \
-     --docker-username=<login> \
-     --docker-password=<password>
-   $ kubectl patch serviceaccount default -p '{"imagePullSecrets":[{"name":"dvc-viewer-aws"}]}'
-   ```
-3. Bootstrap your own customization files:
-   `cp k8s/kustomization.yaml.example k8s/kustomization.yaml`
-4. Edit file for providing all needful data (needs to fill literals with
-   REQUIRED comment)
-5. Launch it `kustomize build k8s | kubectl apply -f -`
-
-_Note: if you'd like to see what manifests are created by kustomize, just dump
-them in a file with `kustomize build k8s > k8s/resources.yaml` and review them
-before creating them in your cluster._
-
-#### with k8s (minikube)
-
-6. Expose services
-   ```
-   $ kubectl port-forward service/dvc-viewer-backend 8000:8000
-   $ kubectl port-forward service/dvc-viewer-ui 3000:3000
-   ```
-
-After that, you should be able to navigate to `http://localhost:3000` and see
-the Viewer main page!
-
-_Note: this guide doesn't cover ingress setup, if you want Viewer to be
-accessible on specific hostname, you'll need to setup the ingress yourself._
