@@ -1,21 +1,21 @@
-# Studio On-Premise
+# DVC Studio On-Premise
 
-This repository contains recipes for you to run Iterative Studio on your own
-infrastructure, using `docker-compose` or `k8s` or one of it's flavors.
+This repository contains recipes for you to run DVC Studio by Iterative on your own
+infrastructure, using `docker-compose` or `k8s` or one of its flavors.
 
 The guide will walk you through the preparation, customization, and basic
 deployment scenarios.
 
-## Prerquisites
+## Prerequisites
 
 ### Getting the OAuth apps
 
-In order to run Viewer on premise, you'll need to setup your own Github or
-Gitlab OAuth apps and provide their credentials to the Viewer to use.
+In order to run Studio on premise, you'll need to setup your own GitHub or
+GitLab OAuth apps and provide their credentials to Studio.
 
-#### Github App
+#### GitHub App
 
-You need to create your own [GitHub App](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps#about-github-apps) for being able to authorize on the provider side
+You need to create your own [GitHub App](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps#about-github-apps) for being able to authorize on the provider side.
 Redirect URI should be **${API_URL}/complete/gitlab/**
 
 #### GitLab OAuth app
@@ -25,17 +25,17 @@ Redirect URI should be **${API_URL}/complete/gitlab/**
 
 ## Deployment
 
-Viewer is distributed via Iterative's private Docker registry as a set of
-pre-build images.
+Studio is distributed via Iterative's private Docker registry as a set of
+pre-built images.
 
 We assume that Docker Compose and K8s will be the most common environments
-Viewer will be deployed to on premise.
+Studio will be deployed to on premise.
 
 ### Deploying using Docker Compose
 
 1. Your infrastructure needs to have
    [docker-compose v1.25 or newer](https://docs.docker.com/compose/install/) to
-   run Viewer.
+   run Studio.
 2. [Login to the private registry](https://docs.docker.com/engine/reference/commandline/login/)
    ```
    $ docker login -u <login> -p <password> docker.iterative.ai
