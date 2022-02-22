@@ -1,4 +1,4 @@
-# DVC Studio On-Premise
+# Studio On-Premise
 
 This repository contains recipes for you to run DVC Studio by Iterative on your own
 infrastructure, using `docker-compose` or `k8s` or one of its flavors.
@@ -46,3 +46,24 @@ Studio will be deployed to on premise.
 4. Launch the stack `docker-compose up`
 
 Please see [`docker-compose`](/docker-compose/) and generated `docker-compose.yaml` for more details.
+
+### How to use custom root CA
+
+For being able to use custom root CA you need to provide it to the containers.  
+The best option is to build your custom images on top of Studio ones
+
+**Backend**
+```
+FROM viewer_backend:latest
+
+COPY ca.crt /usr/share/local/certificates/ca.crt
+RUN cat /usr/share/local/certificates/ca.crt >> /usr/local/lib/python3.8/site-packages/certifi/cacert.pem
+```
+
+**Frontend**
+```
+FROM viewer_ui:latest
+
+COPY ca.crt /usr/share/local/certificates/ca.crt
+export NODE_EXTRA_CA_CERTS=/usr/share/local/certificates/ca.crt
+```
