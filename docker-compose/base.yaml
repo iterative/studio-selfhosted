@@ -40,6 +40,14 @@ services:
 
         MAX_VIEWS: ${MAX_VIEWS:-100}
         MAX_TEAMS: ${MAX_TEAMS:-10}
+
+        # Minio/S3 storage
+        ENABLE_BLOBVAULT: ${ENABLE_BLOBVAULT:-True}
+        BLOBVAULT_AWS_ACCESS_KEY_ID: ${BLOBVAULT_AWS_ACCESS_KEY_ID:-minioadmin}
+        BLOBVAULT_AWS_SECRET_ACCESS_ID: ${BLOBVAULT_AWS_SECRET_ACCESS_ID:-minioadmin}
+        BLOBVAULT_ENDPOINT_URL: ${BLOBVAULT_ENDPOINT_URL:-http://minio:9000}
+        BLOBVAULT_ENDPOINT_URL_FE: ${BLOBVAULT_ENDPOINT_URL_FE:-http://localhost:9000}
+        BLOBVAULT_BUCKET: ${BLOBVAULT_BUCKET:-blobvault}
     ports:
       - 8000:8000
       - 3000:3000

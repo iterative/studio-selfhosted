@@ -12,12 +12,6 @@ export STUDIO_RELEASE_VERSION=latest
 EXEC="docker-compose --ansi never"
 MANIFESTS=(-f ./docker-compose/base.yaml)
 
-RELEASED_VERSIONS=(
-  latest
-  v0.59.1
-  v0.60.0
-)
-
 declare -a env_errors
 declare -A errors_msg
 errors_msg[GITHUB_WEBHOOK_URL]='Set GITHUB_WEBHOOK_URL, by default ${API_URL}/webhook/github-app/'
@@ -29,11 +23,21 @@ usage () {
   echo
   echo "OPTIONS:"
   echo "  --envs"
+  echo "  --env-file file"
   echo "  --ascii"
+  echo "  --no-minio"
   echo "  --no-postgres"
   echo "  --no-redis"
-  echo "  --release-version latest"
   echo "  --hostname studio.example.com"
+}
+
+
+load_env() {
+  if [ -f "$ENV_FILE" ]; then
+    set -o allexport
+    source $ENV_FILE
+    set +o allexport
+  fi
 }
 
 print_supported_envs () {
@@ -86,6 +90,19 @@ while [ $# -ne 0 ]; do
       print_supported_envs
       exit 0
       ;;
+    --env-file)
+      shift 1
+      ENV_FILE=$1
+      if [ -z "$ENV_FILE" ]; then
+        echo "Point the path to the file"
+        exit 1
+      fi
+      shift 1
+      ;;
+    --no-minio)
+      NO_MINIO=1
+      shift 1
+      ;;
     --no-postgres)
       NO_POSTGRES=1
       shift 1
@@ -106,17 +123,6 @@ while [ $# -ne 0 ]; do
       usage
       exit 0
       ;;
-    --release-version)
-      shift 1
-      STUDIO_RELEASE_VERSION=$1
-      if [[ ! ${RELEASED_VERSIONS[@]} =~ "$STUDIO_RELEASE_VERSION" ]]; then
-        echo "There is no such released version"
-        echo "Supported versions:"
-        ( IFS=$'\n'; echo "${RELEASED_VERSIONS[*]}" )
-        exit 1
-      fi
-      shift 1
-      ;;
     --)
       shift
       ;;
@@ -126,7 +132,15 @@ while [ $# -ne 0 ]; do
   esac
 done
 
+load_env
 init_scm_providers
+
+if [ "$NO_MINIO" != "1" ]; then
+  MANIFESTS+=(-f ./docker-compose/minio.yaml)
+else
+  export ENABLE_BLOBVAULT="False"
+  echo "$ENABLE_BLOBVAULT"
+fi
 
 if [ "$NO_POSTGRES" != "1" ]; then
   MANIFESTS+=(-f ./docker-compose/postgres.yaml)
