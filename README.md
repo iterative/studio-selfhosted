@@ -1,6 +1,6 @@
 # Studio On-Premise
 
-This repository contains recipes for you to run DVC Studio by Iterative on your own
+This repository contains recipes for you to run Studio by Iterative on your own
 infrastructure, using `docker-compose` or `k8s` or one of its flavors.
 
 The guide will walk you through the preparation, customization, and basic
@@ -41,9 +41,10 @@ Studio will be deployed to on premise.
    $ docker login -u <login> -p <password> docker.iterative.ai
    ```
 3. Configure `GITHUB_APP_CLIENT_ID=.. GITHUB_SECRET_KEY=.. ./install.sh` with variables
-   from previous steps.
+   from previous steps (or any other provider). You may also put this variables in `.env` file.  
    More info `./install --help`
-4. Launch the stack `docker-compose up`
+4. Run `./install.sh`
+5. Launch the stack `docker-compose up`
 
 Please see [`docker-compose`](/docker-compose/) and generated `docker-compose.yaml` for more details.
 
