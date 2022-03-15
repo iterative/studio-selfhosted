@@ -48,8 +48,28 @@ Studio will be deployed to on premise.
 
 Please see [`docker-compose`](/docker-compose/) and generated `docker-compose.yaml` for more details.
 
-## HTTPS
+### How to use custom root CA
 
+For being able to use custom root CA you need to provide it to the containers.  
+The best option is to build your custom images on top of Studio ones
+
+**Backend**
+```
+FROM viewer_backend:latest
+
+COPY ca.crt /usr/share/local/certificates/ca.crt
+RUN cat /usr/share/local/certificates/ca.crt >> /usr/local/lib/python3.8/site-packages/certifi/cacert.pem
+```
+
+**Frontend**
+```
+FROM viewer_ui:latest
+
+COPY ca.crt /usr/share/local/certificates/ca.crt
+export NODE_EXTRA_CA_CERTS=/usr/share/local/certificates/ca.crt
+```
+
+**Install**  
 For pointing custom https certificate use such command
 ```
 ./install.sh --url https://example.com \
