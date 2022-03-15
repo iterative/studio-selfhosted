@@ -1,0 +1,27 @@
+version: "3.4"
+
+services:
+  traefik:
+    command:
+      - --accesslog=true
+      - --entrypoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --providers.docker=true
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --log=true
+      - --log.level=DEBUG
+    volumes:
+      - ${TLS_CERT_FILE}:/etc/traefik/server.crt
+      - ${TLS_KEY_FILE}:/etc/traefik/server.key
+      - ./traefik_https_conf.yaml:/etc/traefik/dynamic/traefik_https_conf.yaml
+
+  api:
+    labels:
+      - traefik.http.routers.api.tls=true
+      - traefik.http.routers.ui.tls=true
+    ports:
+      - 443:443
+
+  minio:
+    labels:
+      - traefik.http.routers.minio.tls=true

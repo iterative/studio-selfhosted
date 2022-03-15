@@ -12,3 +12,5 @@ services:
     ports:
       - 9000:9000 # main port
       - 9001:9001 # web console port
+    volumes:
+      - ../minio:/data/:rw

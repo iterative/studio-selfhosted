@@ -68,3 +68,11 @@ FROM viewer_ui:latest
 COPY ca.crt /usr/share/local/certificates/ca.crt
 export NODE_EXTRA_CA_CERTS=/usr/share/local/certificates/ca.crt
 ```
+
+**Install**  
+For pointing custom https certificate use such command
+```
+./install.sh --url https://example.com \
+    --tls-cert-file server.crt \
+    --tls-key-file server.pem
+```
