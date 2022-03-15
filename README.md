@@ -66,7 +66,7 @@ RUN cat /usr/share/local/certificates/ca.crt >> /usr/local/lib/python3.8/site-pa
 FROM viewer_ui:latest
 
 COPY ca.crt /usr/share/local/certificates/ca.crt
-export NODE_EXTRA_CA_CERTS=/usr/share/local/certificates/ca.crt
+ENV NODE_EXTRA_CA_CERTS=/usr/share/local/certificates/ca.crt
 ```
 
 **Install**  
