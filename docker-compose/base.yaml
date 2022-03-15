@@ -7,7 +7,7 @@ services:
     restart: always
     environment:
       ALLOWED_HOSTS: "*"
-      SOCIAL_AUTH_REDIRECT_IS_HTTPS: "False"
+      SOCIAL_AUTH_REDIRECT_IS_HTTPS: "${SOCIAL_AUTH_REDIRECT_IS_HTTPS:-False}"
       SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS: "localhost:3000,localhost:8000"
       API_URL: ${API_URL:-http://localhost:8000/api}
 

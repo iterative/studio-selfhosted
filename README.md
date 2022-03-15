@@ -47,3 +47,12 @@ Studio will be deployed to on premise.
 5. Launch the stack `docker-compose up`
 
 Please see [`docker-compose`](/docker-compose/) and generated `docker-compose.yaml` for more details.
+
+## HTTPS
+
+For pointing custom https certificate use such command
+```
+./install.sh --url https://example.com \
+    --tls-cert-file server.crt \
+    --tls-key-file server.pem
+```

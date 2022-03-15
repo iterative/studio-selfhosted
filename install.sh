@@ -28,7 +28,11 @@ usage () {
   echo "  --no-minio"
   echo "  --no-postgres"
   echo "  --no-redis"
-  echo "  --hostname studio.example.com"
+  echo "  --url http://studio.example.com"
+  echo "  --tls-cert-file server.crt  (works only with --url)"
+  echo "  --tls-key-file server.key  (works only with --url)"
+  echo "  --ui-image url"
+  echo "  --backend-image url"
 }
 
 
@@ -99,6 +103,16 @@ while [ $# -ne 0 ]; do
       fi
       shift 1
       ;;
+    --tls-cert-file)
+      shift 1
+      export TLS_CERT_FILE=$1
+      shift 1
+      ;;
+    --tls-key-file)
+      shift 1
+      export TLS_KEY_FILE=$1
+      shift 1
+      ;;
     --no-minio)
       NO_MINIO=1
       shift 1
@@ -111,14 +125,31 @@ while [ $# -ne 0 ]; do
       NO_REDIS=1
       shift 1
       ;;
-    --hostname)
+    --url)
         shift 1
-        export STUDIO_HOSTNAME=$1
-        export UI_URL=http://${STUDIO_HOSTNAME}
-        export API_URL=http://${STUDIO_HOSTNAME}/api
-        MANIFESTS+=(-f ./docker-compose/traefik.yaml)
+        export STUDIO_URL=$1
+        export UI_URL=${STUDIO_URL}
+        export API_URL=${STUDIO_URL}/api
+        export BLOBVAULT_ENDPOINT_URL_FE=${STUDIO_URL}/minio
+        export STUDIO_HOSTNAME=$(echo ${STUDIO_URL} | awk -F[/:] '{print $4}')
+        schema=$(echo ${STUDIO_URL} | awk -F: '{print $1}')
+        if [ "$schema" = "https" ]; then
+          export SOCIAL_AUTH_REDIRECT_IS_HTTPS=True
+        fi
         shift 1
         ;;
+    --backend-image)
+      shift 1
+      export STUDIO_BACKEND_IMAGE=$1
+      export STUDIO_RELEASE_VERSION=latest
+      shift 1
+      ;;
+    --ui-image)
+      shift 1
+      export STUDIO_UI_IMAGE=$1
+      export STUDIO_RELEASE_VERSION=latest
+      shift 1
+      ;;
     -h|--help)
       usage
       exit 0
@@ -157,6 +188,15 @@ else
     env_errors+=("MUST provide REDIS_URL env")
   fi
 fi
+
+if [ -n "$STUDIO_HOSTNAME" ]; then
+  MANIFESTS+=(-f ./docker-compose/traefik.yaml)
+
+  if [ -n "$TLS_KEY_FILE" -a -n "$TLS_CERT_FILE" ]; then
+    MANIFESTS+=(-f ./docker-compose/traefik_https.yaml)
+  fi
+fi
+
 
 if [ ${#env_errors[@]} -ne 0 ]; then
   ( IFS=$'\n'; echo "${env_errors[*]}" )

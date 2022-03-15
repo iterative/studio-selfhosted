@@ -2,20 +2,32 @@ version: "3.4"
 
 services:
   traefik:
-    image: traefik:2.3
+    image: traefik:latest
     command:
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
+      - --accesslog=true
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+    network_mode: service:api
     restart: always
-    ports:
-      - 80:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
   api:
     labels:
       - traefik.http.routers.api.rule=(Host(`${STUDIO_HOSTNAME}`) && PathPrefix(`/api`))
+      - traefik.http.routers.api.service=api
+      - traefik.http.services.api.loadbalancer.server.port=8000
 
-  ui:
-    labels:
       - traefik.http.routers.ui.rule=Host(`${STUDIO_HOSTNAME}`)
+      - traefik.http.routers.ui.service=ui
+      - traefik.http.services.ui.loadbalancer.server.port=3000
+    extra_hosts:
+      - "${STUDIO_HOSTNAME}:127.0.0.1"
+    ports:
+      - 80:80
+
+  minio:
+    labels:
+      - traefik.http.routers.minio.rule=(Host(`${STUDIO_HOSTNAME}`) && PathPrefix(`/minio`))
+      - traefik.http.middlewares.minio1.stripprefix.prefixes=/minio
+      - traefik.http.routers.minio.middlewares=minio1@docker
