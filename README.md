@@ -57,16 +57,19 @@ The best option is to build your custom images on top of Studio ones
 ```
 FROM viewer_backend:latest
 
-COPY ca.crt /usr/share/local/certificates/ca.crt
-RUN cat /usr/share/local/certificates/ca.crt >> /usr/local/lib/python3.8/site-packages/certifi/cacert.pem
+USER root
+COPY scm_provider_root_ca.crt /usr/local/share/ca-certificates/ca.crt
+RUN cat /usr/local/share/ca-certificates/ca.crt >> /usr/local/lib/python3.10/site-packages/certifi/cacert.pem && \
+    update-ca-cetificates
+USER dvc
 ```
 
 **Frontend**
 ```
 FROM viewer_ui:latest
 
-COPY ca.crt /usr/share/local/certificates/ca.crt
-ENV NODE_EXTRA_CA_CERTS=/usr/share/local/certificates/ca.crt
+COPY server_root_ca.crt /usr/local/share/ca-certificates/ca.crt
+ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/ca.crt
 ```
 
 **Install**  
