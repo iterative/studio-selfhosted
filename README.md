@@ -16,7 +16,7 @@ GitLab OAuth apps and provide their credentials to Studio.
 #### GitHub App
 
 You need to create your own [GitHub App](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps#about-github-apps) for being able to authorize on the provider side.
-Redirect URI should be **${API_URL}/complete/gitlab/**
+Redirect URI should be **${API_URL}/complete/github-app/**
 
 #### GitLab OAuth app
 
