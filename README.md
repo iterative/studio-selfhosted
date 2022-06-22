@@ -23,6 +23,11 @@ Redirect URI should be **${API_URL}/complete/github-app/**
 Please follow [the official guide](https://docs.gitlab.com/ee/integration/oauth_provider.html) to set it up.  
 Redirect URI should be **${API_URL}/complete/gitlab/**
 
+Example: If you deploy to AWS, the redirect URI may look like this
+`http://<URL>/api/complete/gitlab/`, where `<URL>` is the public DNS that you can find in the instance summary.
+So for example `http://ec2-3-232-133-53.compute-1.amazonaws.com/api/complete/gitlab/`
+
+
 ## Deployment
 
 Studio is distributed via Iterative's private Docker registry as a set of
@@ -47,6 +52,12 @@ Studio will be deployed to on premise.
 5. Launch the stack `docker-compose up`
 
 Please see [`docker-compose`](/docker-compose/) and generated `docker-compose.yaml` for more details.
+
+Tips:
+* If you specify `--url` argument during the installation, for example like this
+`./install.sh --url http://ec2-3-232-133-53.compute-1.amazonaws.com`
+you do not need to separately specify `UI_URL` and `API_URL` environment variables
+as they will be automatically set up on ports 3000 and 8000, respectively.
 
 ### How to use custom root CA
 
