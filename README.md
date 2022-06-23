@@ -55,7 +55,7 @@ Please see [`docker-compose`](/docker-compose/) and generated `docker-compose.ya
 
 Tips:
 * If you specify `--url` argument during the installation, for example like this
-`./install.sh --url http://ec2-3-232-133-53.compute-1.amazonaws.com`
+`./install.sh --url https://ec2-3-232-133-53.compute-1.amazonaws.com`
 you do not need to separately specify `UI_URL` and `API_URL` environment variables
 as they will be automatically set up on ports 3000 and 8000, respectively.
 
