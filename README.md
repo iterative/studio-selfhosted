@@ -24,8 +24,8 @@ Please follow [the official guide](https://docs.gitlab.com/ee/integration/oauth_
 Redirect URI should be **${API_URL}/complete/gitlab/**
 
 Example: If you deploy to AWS, the redirect URI may look like this
-`http://<URL>/api/complete/gitlab/`, where `<URL>` is the public DNS that you can find in the instance summary.
-So for example `http://ec2-3-232-133-53.compute-1.amazonaws.com/api/complete/gitlab/`
+`https://<FQDN>/api/complete/gitlab/`, where `<FQDN>` is the public DNS name that you can find in the instance summary.
+So for example `https://ec2-3-232-133-53.compute-1.amazonaws.com/api/complete/gitlab/`
 
 
 ## Deployment
