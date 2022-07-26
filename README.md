@@ -90,3 +90,7 @@ For pointing custom https certificate use such command
     --tls-cert-file server.crt \
     --tls-key-file server.pem
 ```
+
+**Notes**
+If you are using custom root CA for your certificates you need to setup SCM provider that it could reach studio
+You need to disable `SSL Verification`(not recommended) or use [trusted CA](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#unable-to-get-local-issuer-certificate)
