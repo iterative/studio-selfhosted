@@ -14,9 +14,6 @@ MANIFESTS=(-f ./docker-compose/base.yaml)
 
 declare -a env_errors
 declare -A errors_msg
-errors_msg[GITHUB_WEBHOOK_URL]='Set GITHUB_WEBHOOK_URL, by default ${API_URL}/webhook/github-app/'
-errors_msg[GITLAB_WEBHOOK_URL]='Set GITLAB_WEBHOOK_URL, by default ${API_URL}/webhook/gitlab/'
-errors_msg[BITBUCKET_WEBHOOK_URL]='Set BITBUCKET_WEBHOOK_URL, by default ${API_URL}/webhook/bitbucket/'
 
 usage () {
   echo "Usage: $0 [OPTIONS]"
@@ -62,19 +59,16 @@ init_scm_providers() {
     check_env_variable GITHUB_APP_ID
     check_env_variable GITHUB_APP_SECRET_KEY
     check_env_variable GITHUB_APP_PRIVATE_KEY_PEM
-    [ -n "$STUDIO_HOSTNAME" ] && check_env_variable GITHUB_WEBHOOK_URL
     PROVIDERS+=("github")
   fi
 
   if [ -n "$GITLAB_CLIENT_ID" ]; then
     check_env_variable GITLAB_SECRET_KEY
-    [ -n "$STUDIO_HOSTNAME" ] && check_env_variable GITLAB_WEBHOOK_URL
     PROVIDERS+=("gitlab")
   fi
 
   if [ -n "$BITBUCKET_CLIENT_ID" ]; then
     check_env_variable BITBUCKET_SECRET_KEY
-    [ -n "$STUDIO_HOSTNAME" ] && check_env_variable BITBUCKET_WEBHOOK_URL
     PROVIDERS+=("bitbucket")
   fi
 
@@ -132,6 +126,10 @@ while [ $# -ne 0 ]; do
         export API_URL=${STUDIO_URL}/api
         export BLOBVAULT_ENDPOINT_URL_FE=${STUDIO_URL}/minio
         export STUDIO_HOSTNAME=$(echo ${STUDIO_URL} | awk -F[/:] '{print $4}')
+        # setting webhook urls
+        export GITHUB_WEBHOOK_URL=${STUDIO_HOSTNAME}/webhook/github/
+        export GITLAB_WEBHOOK_URL=${STUDIO_HOSTNAME}/webhook/gitlab/
+        export BITBUCKET_WEBHOOK_URL=${STUDIO_HOSTNAME}/webhook/bitbucket/
         schema=$(echo ${STUDIO_URL} | awk -F: '{print $1}')
         if [ "$schema" = "https" ]; then
           export SOCIAL_AUTH_REDIRECT_IS_HTTPS=True
