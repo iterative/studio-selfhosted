@@ -6,7 +6,22 @@ infrastructure, using `docker-compose` or `k8s` or one of its flavors.
 The guide will walk you through the preparation, customization, and basic
 deployment scenarios.
 
+## Studio components 
+
+Studio is built from a few components:
+
+1. UI
+2. API
+3. Workers
+4. Services: Beat/Admin/Minio
+
 ## Prerequisites
+
+### Minimum hardware requirements
+
+- Memory: 4GB
+- Cpu: 2
+- Disk: 20Gb
 
 ### Getting the OAuth apps
 
@@ -18,6 +33,14 @@ GitLab OAuth apps and provide their credentials to Studio.
 You need to create your own [GitHub App](https://docs.github.com/en/developers/apps/getting-started-with-apps/about-apps#about-github-apps) for being able to authorize on the provider side.
 Redirect URI should be **${API_URL}/complete/github-app/**
 
+**OAuth scopes**:
+
+- admin:repo_hook
+- read:org
+- read:user
+- repo
+- user:email
+
 #### GitLab OAuth app
 
 Please follow [the official guide](https://docs.gitlab.com/ee/integration/oauth_provider.html) to set it up.  
@@ -27,6 +50,27 @@ Example: If you deploy to AWS, the redirect URI may look like this
 `https://<FQDN>/api/complete/gitlab/`, where `<FQDN>` is the public DNS name that you can find in the instance summary.
 So for example `https://ec2-3-232-133-53.compute-1.amazonaws.com/api/complete/gitlab/`
 
+**OAuth scopes**:
+
+- api
+- email
+- profile
+- read_api
+- read_user
+- read_repository
+
+### Bitbucket
+
+**OAuth scopes**:
+
+- account:email
+- account:read
+- projects:read
+- repositories:read
+- repositories:write
+- pullrequests:read
+- pullrequests:write
+- webhooks:readandwrite
 
 ## Deployment
 
