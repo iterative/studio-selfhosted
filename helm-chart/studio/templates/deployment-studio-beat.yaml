@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: studio-beat
+  labels:
+    {{- include "studio-beat.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.studioBeat.autoscaling.enabled }}
+  replicas: {{ .Values.studioBeat.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "studio-beat.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.studioBeat.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "studio-beat.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "studio.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.studioBeat.podSecurityContext | nindent 8 }}
+      containers:
+        - name: studio-beat
+          securityContext:
+            {{- toYaml .Values.studioBeat.securityContext | nindent 12 }}
+          image: "{{ .Values.studioBeat.image.repository }}:{{ .Values.studioBeat.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.studioBeat.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {{- toYaml .Values.studioBeat.resources | nindent 12 }}
+      {{- with .Values.studioBeat.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.studioBeat.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.studioBeat.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

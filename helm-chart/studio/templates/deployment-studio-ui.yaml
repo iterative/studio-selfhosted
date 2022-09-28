@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: studio-ui
+  labels:
+    {{- include "studio-ui.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.studioUi.autoscaling.enabled }}
+  replicas: {{ .Values.studioUi.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "studio-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.studioUi.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "studio-ui.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "studio.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.studioUi.podSecurityContext | nindent 8 }}
+      containers:
+        - name: studio-ui
+          securityContext:
+            {{- toYaml .Values.studioUi.securityContext | nindent 12 }}
+          image: "{{ .Values.studioUi.image.repository }}:{{ .Values.studioUi.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.studioUi.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {{- toYaml .Values.studioUi.resources | nindent 12 }}
+      {{- with .Values.studioUi.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.studioUi.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.studioUi.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,32 @@
+{{- if .Values.studioBackend.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: studio-backend
+  labels:
+    {{- include "studio.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: studio-backend
+  minReplicas: {{ .Values.studioBackend.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.studioBackend.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.studioBackend.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.studioBackend.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.studioBackend.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.studioBackend.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,61 @@
+{{- if .Values.studioBackend.ingress.enabled -}}
+{{- $fullName := include "studio.fullname" . -}}
+{{- $svcPort := .Values.studioBackend.service.port -}}
+{{- if and .Values.studioBackend.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.studioBackend.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.studioBackend.ingress.annotations "kubernetes.io/ingress.class" .Values.studioBackend.ingress.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: studio-backend
+  labels:
+    {{- include "studio-backend.labels" . | nindent 4 }}
+  {{- with .Values.studioBackend.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.studioBackend.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.studioBackend.ingress.className }}
+  {{- end }}
+  {{- if .Values.studioBackend.ingress.tls }}
+  tls:
+    {{- range .Values.studioBackend.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.studioBackend.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: studio-backend
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              serviceName: studio-backend
+              servicePort: {{ $svcPort }}
+              {{- end }}
+          {{- end }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: studio-worker
+  labels:
+    {{- include "studio-worker.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.studioWorker.autoscaling.enabled }}
+  replicas: {{ .Values.studioWorker.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "studio-worker.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.studioWorker.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "studio-worker.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "studio.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.studioWorker.podSecurityContext | nindent 8 }}
+      containers:
+        - name: studio-worker
+          securityContext:
+            {{- toYaml .Values.studioWorker.securityContext | nindent 12 }}
+          image: "{{ .Values.studioWorker.image.repository }}:{{ .Values.studioWorker.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.studioWorker.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          resources:
+            {{- toYaml .Values.studioWorker.resources | nindent 12 }}
+      {{- with .Values.studioWorker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.studioWorker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.studioWorker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
