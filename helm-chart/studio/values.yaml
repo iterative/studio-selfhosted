@@ -262,10 +262,10 @@ global:
     bitbucketSecretKey: ""
     bitbucketClientId: ""
     # Mandatory Values
-    postgresDatabaseUser: ""
-    postgresDatabasePassword: ""
-    blobVaultAccessKeyId: ""
-    blobVaultSecretAccessId: ""
+    postgresDatabaseUser: "postgres"
+    postgresDatabasePassword: "postgres"
+    blobVaultAccessKeyId: "admin"
+    blobVaultSecretAccessId: "password"
     secretKey: ""
 
 
@@ -279,14 +279,14 @@ global:
     bitbucketWebhookUrl: ""
     blobvaultEndpointUrl: ""
     blobvaultEndpointUrlFe: ""
-    blobvaultBucket: ""
+    blobvaultBucket: "iterativeai"
     celeryBrokerUrl: ""
     celeryResultBackend: ""
     # Mandatory Values
-    postgresDatabaseUrl: ""
-    scmProviders: ""
-    maxViews: 100
-    maxTeams: 10
+    postgresDatabaseUrl: "studio-postgresql.default.svc.cluster.local:5432/iterativeai"
+    scmProviders: "gitlab"
+    maxViews: "100"
+    maxTeams: "10"
 
 
 
@@ -295,6 +295,15 @@ global:
 minio:
   enabled: true
   fullnameOverride: studio-minio
+  
+  # Change this before deploying
+  auth:
+    rootUser: admin
+    rootPassword: password
+  
+  provisioning:
+    buckets:
+      - iterativeai
 
 redis:
   enabled: true
@@ -303,3 +312,9 @@ redis:
 postgresql:
   enabled: true
   fullnameOverride: studio-postgresql
+
+  # Change this before deploying
+  auth:
+    username: postgres
+    password: postgres
+    database: iterativeai
