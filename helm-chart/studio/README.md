@@ -2,11 +2,27 @@
 
 ## Install Studio
 
+Configure Credentials to pull images from secure registry
 ```bash
-$ helm install studio studio/ -n <namespace>
+$ kubectl create secret docker-registry iterativeai \
+    --docker-server=docker.iterative.ai \
+    --docker-username=username \
+    --docker-password=password
 ```
 
-### Parameters
+Create a file `override.yaml` with the following content or edit `values.yaml`
+
+```yaml
+imagePullSecrets:
+  - name: iterativeai
+```
+
+ Deploy Studio
+ ```bash
+$ helm install studio studio/ -n <namespace> -f override.yaml
+```
+
+## Parameters
 
 | Name | Description | Value | Required |
 |------|-------------|-------|----------|
