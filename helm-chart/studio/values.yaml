@@ -266,7 +266,8 @@ global:
     postgresDatabasePassword: "postgres"
     blobVaultAccessKeyId: "admin"
     blobVaultSecretAccessId: "password"
-    secretKey: ""
+    # YOU MUST REGENERATE THE VALUE, https://djecrety.ir/
+    secretKey: "e12s36!=^3$#j$*-3=d=hcb)lbd6)mu($dd%(ql8jq-8a8n=&7"
 
 
   configurations:
@@ -309,12 +310,16 @@ redis:
   enabled: true
   fullnameOverride: studio-redis
 
+  auth:
+    enabled: false
+
 postgresql:
   enabled: true
   fullnameOverride: studio-postgresql
 
   # Change this before deploying
-  auth:
-    username: postgres
-    password: postgres
-    database: iterativeai
+  global:
+    postgresql:
+      auth:
+        postgresPassword: postgres
+        database: iterativeai

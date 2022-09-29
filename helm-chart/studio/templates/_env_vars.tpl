@@ -113,14 +113,21 @@
 {{- if .Values.global.configurations.celeryBrokerUrl }}
   value: {{ .Values.global.configurations.celeryBrokerUrl }}
 {{- else }}
-  value: "{{ .Values.redis.fullnameOverride }}-master.{{ .Release.Namespace }}.svc.cluster.local:9000"
+  value: "redis://{{ .Values.redis.fullnameOverride }}-master.{{ .Release.Namespace }}.svc.cluster.local:6379"
 {{- end }}
 
 - name: CELERY_RESULT_BACKEND
 {{- if .Values.global.configurations.celeryResultBackend }}
   value: {{ .Values.global.configurations.celeryResultBackend }}
 {{- else }}
-  value: "{{ .Values.redis.fullnameOverride }}-master.{{ .Release.Namespace }}.svc.cluster.local:9000"
+  value: "redis://{{ .Values.redis.fullnameOverride }}-master.{{ .Release.Namespace }}.svc.cluster.local:6379"
+{{- end }}
+
+- name: REDIS_URL
+{{- if .Values.global.configurations.celeryResultBackend }}
+  value: {{ .Values.global.configurations.celeryResultBackend }}
+{{- else }}
+  value: "redis://{{ .Values.redis.fullnameOverride }}-master.{{ .Release.Namespace }}.svc.cluster.local:6379"
 {{- end }}
 
 - name: DATABASE_URL
@@ -253,14 +260,14 @@
 
 - name: MAX_VIEWS
 {{- if .Values.global.configurations.maxViews }}
-  value: {{ .Values.global.configurations.maxViews }}
+  value: {{ .Values.global.configurations.maxViews | quote }}
 {{- else }}
   value: ""
 {{- end }}
 
 - name: MAX_TEAMS
 {{- if .Values.global.configurations.maxTeams }}
-  value: {{ .Values.global.configurations.maxTeams }}
+  value: {{ .Values.global.configurations.maxTeams | quote }}
 {{- else }}
   value: ""
 {{- end }}
