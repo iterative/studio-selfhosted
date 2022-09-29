@@ -7,10 +7,11 @@ imagePullSecrets: []
 studioUi:
   replicaCount: 1
 
-  repository: docker.iterative.ai/viewer_ui
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  image:
+    repository: docker.iterative.ai/viewer_ui
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
 
   service:
     type: ClusterIP
@@ -78,10 +79,11 @@ studioUi:
 studioBackend:
   replicaCount: 1
 
-  repository: docker.iterative.ai/viewer_backend
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  image:
+    repository: docker.iterative.ai/viewer_backend
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
 
   service:
     type: ClusterIP
@@ -148,15 +150,6 @@ studioBackend:
 studioBeat:
   replicaCount: 1
 
-  repository: nginx
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-
-  service:
-    type: ClusterIP
-    port: 8000
-
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -201,15 +194,6 @@ studioBeat:
 
 studioWorker:
   replicaCount: 1
-
-  repository: nginx
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
-
-  service:
-    type: ClusterIP
-    port: 8000
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -270,16 +254,19 @@ global:
     gitlabClientId: ""
     gitlabSecretKey: ""
     gitlabWebhookSecret: ""
+    githubClientId: ""
     githubAppId: ""
     githubAppSecret: ""
     githubPrivateKey: ""
     githubWebhookSecret: ""
-    secretKey: ""
+    bitbucketSecretKey: ""
+    bitbucketClientId: ""
+    # Mandatory Values
     postgresDatabaseUser: ""
     postgresDatabasePassword: ""
     blobVaultAccessKeyId: ""
     blobVaultSecretAccessId: ""
-    bitbucketSecretKey: ""
+    secretKey: ""
 
 
   configurations:
@@ -287,9 +274,32 @@ global:
     githubWebhookUrl: ""
     gitlabUrl: ""
     gitlabWebhookUrl: ""
+    bitbucketUrl: ""
+    bitbucketApiUrl: ""
+    bitbucketWebhookUrl: ""
+    blobvaultEndpointUrl: ""
+    blobvaultEndpointUrlFe: ""
+    blobvaultBucket: ""
+    celeryBrokerUrl: ""
+    celeryResultBackend: ""
+    # Mandatory Values
+    postgresDatabaseUrl: ""
     scmProviders: ""
     maxViews: 100
     maxTeams: 10
 
 
 
+# dependencies
+
+minio:
+  enabled: true
+  fullnameOverride: studio-minio
+
+redis:
+  enabled: true
+  fullnameOverride: studio-redis
+
+postgresql:
+  enabled: true
+  fullnameOverride: studio-postgresql

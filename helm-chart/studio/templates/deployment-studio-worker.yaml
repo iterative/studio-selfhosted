@@ -31,8 +31,8 @@ spec:
         - name: studio-worker
           securityContext:
             {{- toYaml .Values.studioWorker.securityContext | nindent 12 }}
-          image: "{{ .Values.studioWorker.image.repository }}:{{ .Values.studioWorker.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.studioWorker.image.pullPolicy }}
+          image: "{{ .Values.studioBackend.image.repository }}:{{ .Values.studioBackend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.studioBackend.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8000
@@ -47,6 +47,12 @@ spec:
           #     port: http
           resources:
             {{- toYaml .Values.studioWorker.resources | nindent 12 }}
+          env:
+            {{ include "studio.envvars" . | indent 12 }}
+            - name: "NO_MIGRATE_DB"
+              value: "1"
+            - name: "WAIT_FOR_MIGRATIONS"
+              value: "1"
       {{- with .Values.studioWorker.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

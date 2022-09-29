@@ -47,6 +47,8 @@ spec:
           #     port: http
           resources:
             {{- toYaml .Values.studioUi.resources | nindent 12 }}
+          env:
+            {{ include "studio.envvars" . | indent 12 }}
       {{- with .Values.studioUi.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

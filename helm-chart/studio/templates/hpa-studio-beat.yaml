@@ -4,7 +4,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: studio-beat
   labels:
-    {{- include "studio.labels" . | nindent 4 }}
+    {{- include "studio-beat.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
