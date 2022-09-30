@@ -25,11 +25,14 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: minio
+    condition: minio.enabled
     version: "11.10.3"
     repository: "https://charts.bitnami.com/bitnami"
   - name: redis
+    condition: redis.enabled
     version: "17.2.0"
     repository: "https://charts.bitnami.com/bitnami"
   - name: postgresql
+    condition: postgresql.enabled
     version: "11.9.1"
     repository: "https://charts.bitnami.com/bitnami"
