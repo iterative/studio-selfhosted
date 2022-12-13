@@ -111,18 +111,18 @@ The best option is to build your custom images on top of Studio ones
 
 **Backend**
 ```
-FROM viewer_backend:latest
+FROM docker.iterative.ai/viewer_backend:latest
 
 USER root
 COPY scm_provider_root_ca.crt /usr/local/share/ca-certificates/ca.crt
 RUN cat /usr/local/share/ca-certificates/ca.crt >> /usr/local/lib/python3.10/site-packages/certifi/cacert.pem && \
-    update-ca-cetificates
+    update-ca-certificates
 USER dvc
 ```
 
 **Frontend**
 ```
-FROM viewer_ui:latest
+FROM docker.iterative.ai/viewer_ui:latest
 
 COPY server_root_ca.crt /usr/local/share/ca-certificates/ca.crt
 ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/ca.crt
