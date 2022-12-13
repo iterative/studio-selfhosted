@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:banon
     command:
       - --accesslog=true
       - --entrypoints.web.address=:80
