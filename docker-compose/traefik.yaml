@@ -14,8 +14,7 @@ services:
 
   api:
     labels:
-      - traefik.http.routers.api.rule=(Host(`${STUDIO_HOSTNAME}`) && PathPrefix(`/api`))
-      - traefik.http.routers.api.rule=(Host(`${STUDIO_HOSTNAME}`) && PathPrefix(`/webhook`))
+      - traefik.http.routers.api.rule=(Host(`${STUDIO_HOSTNAME}`) && ( PathPrefix(`/api`)) || PathPrefix(`/webhook`) )
       - traefik.http.routers.api.service=api
       - traefik.http.services.api.loadbalancer.server.port=8000
 
