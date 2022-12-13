@@ -72,8 +72,8 @@ services:
   worker:
     command:
       - celery
-      - worker
       - -Aviewer
+      - worker
       - -linfo
       - -Pthreads
       - -c4
@@ -89,8 +89,8 @@ services:
   beat:
     command:
       - celery
-      - beat
       - -Aviewer
+      - beat
       - -linfo
       - -Sdjango_celery_beat.schedulers:DatabaseScheduler
     image: ${STUDIO_BACKEND_IMAGE}:${STUDIO_RELEASE_VERSION}
