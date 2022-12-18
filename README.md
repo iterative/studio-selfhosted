@@ -116,7 +116,8 @@ FROM docker.iterative.ai/viewer_backend:latest
 USER root
 COPY scm_provider_root_ca.crt /usr/local/share/ca-certificates/ca.crt
 RUN cat /usr/local/share/ca-certificates/ca.crt >> /usr/local/lib/python3.10/site-packages/certifi/cacert.pem && \
-    cp /usr/local/lib/python3.10/site-packages/certifi/cacert.pem /usr/lib/ssl/cert.pem
+    cp /usr/local/lib/python3.10/site-packages/certifi/cacert.pem /usr/lib/ssl/cert.pem && \
+    update-ca-certificates
 USER dvc
 ```
 
