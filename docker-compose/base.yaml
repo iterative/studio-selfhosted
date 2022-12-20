@@ -54,7 +54,7 @@ services:
       - 8000:8000
       - 3000:3000
     volumes:
-      - ./ca:/usr/local/share/ca-certificates
+      - ../ca:/usr/local/share/ca-certificates
 
   ui:
     image: ${STUDIO_UI_IMAGE}:${STUDIO_RELEASE_VERSION}
@@ -73,7 +73,7 @@ services:
       MAX_VIEWS: ${MAX_VIEWS:-100}
       MAX_TEAMS: ${MAX_TEAMS:-10}
     volumes:
-      - ./ca:/usr/local/share/ca-certificates
+      - ../ca:/usr/local/share/ca-certificates
 
   worker:
     command:
@@ -92,7 +92,7 @@ services:
       WAIT_FOR_MIGRATIONS: "1"
       <<: *base_settings
     volumes:
-      - ./ca:/usr/local/share/ca-certificates
+      - ../ca:/usr/local/share/ca-certificates
 
   beat:
     command:
@@ -108,4 +108,4 @@ services:
       WAIT_FOR_MIGRATIONS: "1"
       <<: *base_settings
     volumes:
-      - ./ca:/usr/local/share/ca-certificates
+      - ../ca:/usr/local/share/ca-certificates
