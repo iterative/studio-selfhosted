@@ -5,8 +5,8 @@ if [ "${BASH_VERSINFO:-0}" -lt 4 ]; then
   exit
 fi
 
-export STUDIO_BACKEND_IMAGE=docker.iterative.ai/viewer_backend
-export STUDIO_UI_IMAGE=docker.iterative.ai/viewer_ui
+export STUDIO_BACKEND_IMAGE=studio-backend-custom
+export STUDIO_UI_IMAGE=studio-frontend-custom
 export STUDIO_RELEASE_VERSION=latest
 
 EXEC="docker-compose --ansi never"
