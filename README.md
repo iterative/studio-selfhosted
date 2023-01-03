@@ -1,4 +1,4 @@
-# Studio On-Premise
+# Studio Selfhosted
 
 This repository contains recipes for you to run Studio by Iterative on your own
 infrastructure, using `docker-compose` or `k8s` or one of its flavors.
