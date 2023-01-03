@@ -104,39 +104,38 @@ Tips:
 you do not need to separately specify `UI_URL` and `API_URL` environment variables
 as they will be automatically set up on ports 3000 and 8000, respectively.
 
-### How to use custom root CA
+## Customization
 
-For being able to use custom root CA you need to provide it to the containers.  
-The best option is to build your custom images on top of Studio ones
+### CA certificates
 
-**Backend**
+If you need to use additional CA certificates, whether it's Studio itself or for
+connecting to your self-hosted SCM, you'll need to pass the directory containing the 
+certificates as an additional argument to the install script:
+
 ```
-FROM docker.iterative.ai/viewer_backend:latest
-
-USER root
-COPY scm_provider_root_ca.crt /usr/local/share/ca-certificates/ca.crt
-RUN cat /usr/local/share/ca-certificates/ca.crt >> /usr/local/lib/python3.10/site-packages/certifi/cacert.pem && \
-    cp /usr/local/lib/python3.10/site-packages/certifi/cacert.pem /usr/lib/ssl/cert.pem && \
-    update-ca-certificates
-USER dvc
+./install.sh --tls-ca-directory /path/to/ca-certificates
 ```
 
-**Frontend**
-```
-FROM docker.iterative.ai/viewer_ui:latest
+**Note:** The CA certificate files stored in the directory _must_ have a .crt extension.
 
-COPY server_root_ca.crt /usr/local/share/ca-certificates/ca.crt
-ENV NODE_EXTRA_CA_CERTS=/usr/local/share/ca-certificates/ca.crt
+### TLS certificate
+
+To set up Studio with a TLS certificate, you must pass three additional arguments
+to the install script.
+
+| argument         | description                             |
+| ---------------- | --------------------------------------- |
+| --url            | Studio URL                              |
+| --tls-cert-file  | Path to your server certificate (X.509) |
+| --tls-key-file   | Path to your server private key         |
+
+Example:
+
+```
+./install.sh --url <studio url> \
+    --tls-cert-file <tls cert> \
+    --tls-key-file <tls key>
 ```
 
-**Install**  
-For pointing custom https certificate use such command
-```
-./install.sh --url https://example.com \
-    --tls-cert-file server.crt \
-    --tls-key-file server.pem
-```
-
-**Notes**
-If you are using custom root CA for your certificates you need to setup SCM provider that it could reach studio
-You need to disable `SSL Verification`(not recommended) or use [trusted CA](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html#unable-to-get-local-issuer-certificate)
+**Note:** If you're using a custom CA certificate for Studio, you'll need to set up your SCM provider so that it's
+able to verify Studio's CA certificate. 
