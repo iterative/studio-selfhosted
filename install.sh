@@ -97,6 +97,11 @@ while [ $# -ne 0 ]; do
       fi
       shift 1
       ;;
+    --tls-ca-directory)
+      shift 1
+      export TLS_CA_DIRECTORY=$1
+      shift 1
+      ;;
     --tls-cert-file)
       shift 1
       export TLS_CERT_FILE=$1
@@ -195,11 +200,14 @@ if [ -n "$STUDIO_HOSTNAME" ]; then
   fi
 fi
 
+if [ -n "$TLS_CA_DIRECTORY" ]; then
+  MANIFESTS+=(-f ./docker-compose/ca.yaml)
+fi
 
 if [ ${#env_errors[@]} -ne 0 ]; then
   ( IFS=$'\n'; echo "${env_errors[*]}" )
   echo
-  echo "To see supported environment variables please check docker-compose/base.yaml"
+  echo "To see supported environment variables, please check docker-compose/base.yaml"
   exit 1
 fi
 
