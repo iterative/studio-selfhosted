@@ -1,6 +1,5 @@
 .env
 *.sw?
 docker-compose.yaml
-k8s/kustomization.yaml
 
 minio/

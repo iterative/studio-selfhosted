@@ -1,7 +1,6 @@
 # Studio Selfhosted
 
-This repository contains recipes for you to run Studio by Iterative on your own
-infrastructure, using `docker-compose` or `k8s` or one of its flavors.
+This repository contains an installation script to deploy Iterative Studio on your infrastructure using `docker-compose`.
 
 The guide will walk you through the preparation, customization, and basic
 deployment scenarios.
