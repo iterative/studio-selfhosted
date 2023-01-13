@@ -16,7 +16,11 @@ if [ "$EXISTS" == "Not found" ]; then
         --set-kubeconfig-context
 fi
 
-# Set up Load balancer
-# wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/aws/nlb-with-tls-termination/deploy.yaml
+# Get cluster VPC CIDR
+VPC_CIDR=$()
 
+# Set up Load balancer
+# wget -O /tmp/ingress-nginx.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/aws/nlb-with-tls-termination/deploy.yaml
+# sed -i 's/XXX.XXX.XXX\/XX/$VPC_CIDR/' /tmp/ingress-nginx.yaml
+# kubectl apply -f /tmp/ingress-nginx.yaml
 
