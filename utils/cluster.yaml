@@ -1,0 +1,17 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: iterative-studio
+  version: "1.24"
+  tags:
+    ManagedBy: eksctl
+
+managedNodeGroups:
+- name: studio
+  instanceType: t2.large
+  minSize: 2
+  maxSize: 3
+
+addons:
+- name: vpc-cni
