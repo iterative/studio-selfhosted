@@ -4,6 +4,7 @@ kind: ClusterConfig
 metadata:
   name: iterative-studio
   version: "1.24"
+  region: us-east-2
   tags:
     ManagedBy: eksctl
 
