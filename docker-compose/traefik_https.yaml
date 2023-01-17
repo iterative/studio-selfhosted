@@ -19,6 +19,8 @@ services:
     labels:
       - traefik.http.routers.api.tls=true
       - traefik.http.routers.ui.tls=true
+      - traefik.http.routers.api.rule=(Host(`${STUDIO_HOSTNAME}`) && ( PathPrefix(`/api`)) || PathPrefix(`/webhook`) )
+      - traefik.http.routers.ui.rule=Host(`${STUDIO_HOSTNAME}`)
     ports:
       - 443:443
 
