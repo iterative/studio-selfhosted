@@ -104,12 +104,12 @@ while [ $# -ne 0 ]; do
       ;;
     --tls-cert-file)
       shift 1
-      export TLS_CERT_FILE=$1
+      export TLS_CERT_FILE=`realpath $1`
       shift 1
       ;;
     --tls-key-file)
       shift 1
-      export TLS_KEY_FILE=$1
+      export TLS_KEY_FILE=`realpath $1`
       shift 1
       ;;
     --no-minio)
@@ -196,6 +196,7 @@ if [ -n "$STUDIO_HOSTNAME" ]; then
   MANIFESTS+=(-f ./docker-compose/traefik.yaml)
 
   if [ -n "$TLS_KEY_FILE" -a -n "$TLS_CERT_FILE" ]; then
+
     MANIFESTS+=(-f ./docker-compose/traefik_https.yaml)
   fi
 fi
