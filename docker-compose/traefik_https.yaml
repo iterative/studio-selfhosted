@@ -27,3 +27,4 @@ services:
   minio:
     labels:
       - traefik.http.routers.minio.tls=true
+      - traefik.http.routers.minio.rule=(Host(`${STUDIO_HOSTNAME}`) && ( PathPrefix(`/minio`) )
