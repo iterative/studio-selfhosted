@@ -37,8 +37,8 @@ services:
         BITBUCKET_CLIENT_ID: ${BITBUCKET_CLIENT_ID:-}
         BITBUCKET_SECRET_KEY: ${BITBUCKET_SECRET_KEY:-}
         BITBUCKET_API_URL: ${BITBUCKET_API_URL:-}
-        BITBUCKET_URL: ${BITBUCKET_URL-http://localhost:8000/webhook/bitbucket/}
-        BITBUCKET_WEBHOOK_URL: ${BITBUCKET_WEBHOOK_URL:-}
+        BITBUCKET_URL: ${BITBUCKET_URL-https://bitbucket.org}
+        BITBUCKET_WEBHOOK_URL: ${BITBUCKET_WEBHOOK_URL:-http://localhost:8000/webhook/bitbucket/}
 
         MAX_VIEWS: ${MAX_VIEWS:-100}
         MAX_TEAMS: ${MAX_TEAMS:-10}
