@@ -139,6 +139,7 @@ while [ $# -ne 0 ]; do
         if [ "$schema" = "https" ]; then
           export SOCIAL_AUTH_REDIRECT_IS_HTTPS=True
         fi
+        export SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS_EXTRA="$STUDIO_HOSTNAME,"
         shift 1
         ;;
     --backend-image)
