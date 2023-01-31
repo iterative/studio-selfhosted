@@ -90,7 +90,7 @@ created for the NLB address that will be auto-generated.
 
     ```shell
     $ cd $(git rev-parse --show-toplevel)
-    $ cd ingress-controller
+    $ cd terraform/ingress-controller
     $ terraform init
     $ terraform apply --auto-approve
     ```
@@ -120,7 +120,7 @@ last step directly as the address.
 
     ```shell
     $ cd $(git rev-parse --show-toplevel)
-    $ cd studio
+    $ cd terraform/studio
     $ terraform init
     $ terraform apply --auto-approve
     ```
