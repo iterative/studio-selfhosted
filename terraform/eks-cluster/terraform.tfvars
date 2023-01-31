@@ -1,0 +1,5 @@
+admin_iam_role   = "$ADMIN_IAM_ROLE"
+cluster_name     = "$CLUSTER_NAME"
+create_vpc       = "$CREATE_VPC"
+vpc_name         = "$VPC_NAME"
+# vpc_cidr       = "10.0.0.0/16"

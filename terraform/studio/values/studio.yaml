@@ -1,0 +1,24 @@
+imagePullSecrets:
+  - name: iterativeai
+
+global:
+  host: "<set-this-to-nlb-hostname>"
+  secretKey: "<generate-some-str-eg-uuid>"
+  ingress:
+    enabled: true
+    className: nginx
+    tlsEnabled: true
+    tlsSecretName: studio-ingress-tls
+
+#  scmProviders:
+#    github:
+#      enabled: true
+#      appId: "<app-id>"
+#      appName: "iterative-studio-selfhosted"
+#      clientId: "<gh-client-id>"
+#      appSecret: "<gh-app-secret>"
+#      webhookUrl: "https://my-studio.private.com/webhook/github"
+#      privateKey: |-
+#        -----BEGIN RSA PRIVATE KEY-----
+#        ...
+#        -----END RSA PRIVATE KEY-----
