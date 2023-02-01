@@ -1,5 +1,5 @@
-# studio-selfhosted-packer
-Packer AMI definition for Studio Selfhosted
+# Development
+To build the AMI and publish it to the AWS marketplace, use the following commands:
 
 ```bash
 packer init studio-selfhosted.pkr.hcl

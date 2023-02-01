@@ -122,7 +122,7 @@ build {
     execute_command = "chmod +x {{ .Path }}; {{ .Vars }} sudo bash {{ .Path }}"
   }
 
-  # Configure 'ubuntu' user to manage Studio
+# Install script running as 'ubuntu'
   provisioner "shell" {
     script = "${path.root}/setup_ubuntu.sh"
   }

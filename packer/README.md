@@ -1,6 +1,6 @@
-# Studio Selfhosted AMI instance
+# Studio Selfhosted AMI
 
-This AMI contains K3s with preconfigured Ingress Nginx. 
+This AMI contains K3s along with a preconfigured ingress-nginx reverse proxy. 
 
 ## Studio Installation
 To deploy Studio please:
