@@ -1,0 +1,29 @@
+#cloud-config
+autoinstall:
+    version: 1
+    early-commands:
+        - ping -c1 1.1.1.1
+    locale: ${var.locale}
+    keyboard:
+      layout: ${var.language}
+      variant: ${var.keyboard}
+    network:
+      network:
+          version: 2
+          ethernets:
+              eth0:
+                 dhcp4: yes
+    storage:
+      swap:
+        size: 0
+      layout:
+        name: direct
+    identity:
+      hostname: ${var.vm_name}
+      username: ${var.ssh_username}
+      password: ${var.ssh_password_crypted}
+    ssh:
+      install-server: true
+      allow-pw: yes
+    user-data:
+        disable_root: false
