@@ -2,26 +2,25 @@
 autoinstall:
     version: 1
     early-commands:
-        - ping -c1 1.1.1.1
-    locale: ${var.locale}
+    - ping -c 5 1.1.1.1
+    locale: en_US
     keyboard:
-      layout: ${var.language}
-      variant: ${var.keyboard}
+      layout: en
+      variant: us
     network:
-      network:
-          version: 2
-          ethernets:
-              eth0:
-                 dhcp4: yes
+      version: 2
+      ethernets:
+          enp0s3:
+             dhcp4: yes
     storage:
       swap:
         size: 0
       layout:
         name: direct
     identity:
-      hostname: ${var.vm_name}
-      username: ${var.ssh_username}
-      password: ${var.ssh_password_crypted}
+      hostname: studio-selfhosted-virtualbox
+      username: ubuntu
+      password: $6$O530CsnyO/PNQqqY$yRofSd/TbMr7vFEb72mSkSZSKS2OmnbGwQ2Hk4nE9Q3bOGc5NO1gkVOdvAgRVR5ewawHaR/rdCsgR35TAZqk90
     ssh:
       install-server: true
       allow-pw: yes
