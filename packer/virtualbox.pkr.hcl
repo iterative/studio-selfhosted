@@ -39,14 +39,9 @@ variable "cpus" {
   default = "1"
 }
 
-variable "description" {
-  type    = string
-  default = "Base box for x86_64 Ubuntu Jammy Jellyfish 22.04.x LTS"
-}
-
 variable "disk_size" {
   type    = string
-  default = "7500"
+  default = "8000"
 }
 
 variable "domain" {
@@ -132,7 +127,7 @@ variable "packer_cache_dir" {
 
 variable "shutdown_timeout" {
   type    = string
-  default = "5m"
+  default = "30m"
 }
 
 variable "skip_export" {
@@ -160,11 +155,6 @@ variable "ssh_file_transfer_method" {
   default = "scp"
 }
 
-variable "ssh_fullname" {
-  type    = string
-  default = "Ghost Writer"
-}
-
 variable "ssh_handshake_attempts" {
   type    = string
   default = "100"
@@ -175,14 +165,14 @@ variable "ssh_keep_alive_interval" {
   default = "5s"
 }
 
-variable "ssh_password" {
+variable "ssh_username" {
   type    = string
-  default = "1ma63b0rk3d"
+  default = "ubuntu"
 }
 
-variable "ssh_password_crypted" {
+variable "ssh_password" {
   type    = string
-  default = "$6$w5yFawT.$d51yQ513SdzariRCjomBwO9IMtMh6.TjnRwQqTBlOMwGhyyVXlJeYC9kanFp65bpoS1tn9x7r8gLP5Dg4CtEP1"
+  default = "ubuntu"
 }
 
 variable "ssh_port" {
@@ -200,11 +190,6 @@ variable "ssh_timeout" {
   default = "60m"
 }
 
-variable "ssh_username" {
-  type    = string
-  default = "ghost"
-}
-
 variable "start_retry_timeout" {
   type    = string
   default = "5m"
@@ -218,11 +203,6 @@ variable "system_clock_in_utc" {
 variable "timezone" {
   type    = string
   default = "UTC"
-}
-
-variable "user_data_location" {
-  type    = string
-  default = "user-data"
 }
 
 variable "version" {
@@ -261,11 +241,12 @@ locals {
 source "virtualbox-iso" "vbox" {
   boot_command = [
     "<wait5>",
-    "c<wait5>",
-    "linux /casper/vmlinuz ",
-    "autoinstall ds=\"nocloud-net;s=http://{{.HTTPIP}}:{{.HTTPPort}}/${var.user_data_location}/\" ---",
-    "<enter><wait5>",
-    "initrd /casper/initrd<enter><wait>",
+    "c<wait>",
+    "set gfxpayload=keep <enter><wait>",
+    "linux /casper/vmlinuz <wait>",
+#    "autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{.HTTPPort}}/' --- <enter><wait>",
+    "autoinstall ds='nocloud-net;s=http://192.168.211.139:{{.HTTPPort}}/' --- <enter><wait>",
+    "initrd /casper/initrd <enter><wait>",
     "boot<enter>"
 
   ]
@@ -282,7 +263,7 @@ source "virtualbox-iso" "vbox" {
   headless                 = var.headless
   host_port_max            = var.host_port_max
   host_port_min            = var.host_port_min
-  http_content             = { "/user-data" = templatefile(var.user_data_location, { var = var }) }
+  http_directory           = "./"
   http_port_max            = var.http_port_max
   http_port_min            = var.http_port_min
   iso_checksum             = var.iso_checksum
@@ -300,7 +281,7 @@ source "virtualbox-iso" "vbox" {
   shutdown_command             = "echo '${var.ssh_password}' | sudo -E -S poweroff"
   shutdown_timeout             = var.shutdown_timeout
   skip_export                  = var.skip_export
-#  skip_nat_mapping             = false
+  skip_nat_mapping             = false
   ssh_agent_auth               = var.ssh_agent_auth
   ssh_clear_authorized_keys    = var.ssh_clear_authorized_keys
   ssh_disable_agent_forwarding = var.ssh_disable_agent_forwarding
@@ -314,8 +295,9 @@ source "virtualbox-iso" "vbox" {
   ssh_username                 = var.ssh_username
   vboxmanage = [
     ["modifyvm", "{{ .Name }}", "--rtcuseutc", "off"],
-    ["modifyvm", "{{ .Name }}", "--cpu-profile", "host"],
-    ["modifyvm", "{{ .Name }}", "--nat-localhostreachable1", "on"],
+#    ["modifyvm", "{{ .Name }}", "--cpu-profile", "host"],
+##    ["modifyvm", "{{ .Name }}", "--nat-localhostreachable1", "on"],
+#    ["modifyvm", "{{ .Name }}", "--nictype1", "virtio"],
   ]
   virtualbox_version_file = "/tmp/.vbox_version"
   vm_name                 = var.vm_name
@@ -325,46 +307,46 @@ source "virtualbox-iso" "vbox" {
 }
 
 build {
-  description = "Can't use variables here yet!"
 
   sources = [ "source.virtualbox-iso.vbox"]
+
+  provisioner "shell" {
+    binary            = false
+    execute_command   = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S '{{ .Path }}'"
+    expect_disconnect = true
+    inline = [
+      "cloud-init status --wait"
+    ]
+    inline_shebang      = "/bin/sh -e"
+    skip_clean          = false
+    start_retry_timeout = var.start_retry_timeout
+  }
+  provisioner "shell" {
+    binary            = false
+    execute_command   = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S '{{ .Path }}'"
+    expect_disconnect = true
+    inline = [
+      "apt-get update",
+      "apt-get --yes dist-upgrade",
+      "apt-get clean"
+    ]
+    inline_shebang      = "/bin/sh -e"
+    skip_clean          = false
+    start_retry_timeout = var.start_retry_timeout
+  }
+
+  provisioner "shell" {
+    binary            = false
+    execute_command   = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S '{{ .Path }}'"
+    expect_disconnect = true
+    inline = [
+      "dd if=/dev/zero of=/ZEROFILL bs=16M || true",
+      "rm /ZEROFILL",
+      "sync"
+    ]
+    inline_shebang      = "/bin/sh -e"
+    skip_clean          = false
+    start_retry_timeout = var.start_retry_timeout
+  }
 #
-#  provisioner "shell" {
-#    binary            = false
-#    execute_command   = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S '{{ .Path }}'"
-#    expect_disconnect = true
-#    inline = [
-#      "apt-get update",
-#      "apt-get --yes dist-upgrade",
-#      "apt-get clean"
-#    ]
-#    inline_shebang      = "/bin/sh -e"
-#    only                = ["qemu", "vbox"]
-#    skip_clean          = false
-#    start_retry_timeout = var.start_retry_timeout
-#  }
-#
-#  provisioner "shell" {
-#    binary            = false
-#    execute_command   = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S '{{ .Path }}'"
-#    expect_disconnect = true
-#    inline = [
-#      "dd if=/dev/zero of=/ZEROFILL bs=16M || true",
-#      "rm /ZEROFILL",
-#      "sync"
-#    ]
-#    inline_shebang      = "/bin/sh -e"
-#    only                = ["qemu", "vbox"]
-#    skip_clean          = false
-#    start_retry_timeout = var.start_retry_timeout
-#  }
-#
-#
-#  post-processor "compress" {
-#    compression_level   = 6
-#    format              = ".gz"
-#    keep_input_artifact = true
-#    only                = ["qemu"]
-#    output              = "${local.output_directory}/${var.vm_name}.raw.gz"
-#  }
 }
