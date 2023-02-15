@@ -8,3 +8,4 @@ minio/
 tls.key
 tls.crt
 .idea/
+/packer/build/

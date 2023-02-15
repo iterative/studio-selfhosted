@@ -41,7 +41,7 @@ variable "cpus" {
 
 variable "disk_size" {
   type    = string
-  default = "8000"
+  default = "30000"
 }
 
 variable "domain" {
@@ -132,7 +132,7 @@ variable "shutdown_timeout" {
 
 variable "skip_export" {
   type    = string
-  default = "true"
+  default = "false"
 }
 
 variable "ssh_agent_auth" {
@@ -200,10 +200,6 @@ variable "system_clock_in_utc" {
   default = "true"
 }
 
-variable "timezone" {
-  type    = string
-  default = "UTC"
-}
 
 variable "version" {
   type    = string
@@ -212,7 +208,7 @@ variable "version" {
 
 variable "vm_name" {
   type    = string
-  default = "base-jammy"
+  default = "studio-selfhosted"
 }
 
 variable "vnc_vrdp_bind_address" {
@@ -244,8 +240,8 @@ source "virtualbox-iso" "vbox" {
     "c<wait>",
     "set gfxpayload=keep <enter><wait>",
     "linux /casper/vmlinuz <wait>",
-#    "autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{.HTTPPort}}/' --- <enter><wait>",
-    "autoinstall ds='nocloud-net;s=http://192.168.211.139:{{.HTTPPort}}/' --- <enter><wait>",
+    "autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{.HTTPPort}}/' --- <enter><wait>",
+#    "autoinstall ds='nocloud-net;s=http://192.168.211.139:{{.HTTPPort}}/' --- <enter><wait>",
     "initrd /casper/initrd <enter><wait>",
     "boot<enter>"
 
@@ -294,10 +290,8 @@ source "virtualbox-iso" "vbox" {
   ssh_timeout                  = var.ssh_timeout
   ssh_username                 = var.ssh_username
   vboxmanage = [
-    ["modifyvm", "{{ .Name }}", "--rtcuseutc", "off"],
-#    ["modifyvm", "{{ .Name }}", "--cpu-profile", "host"],
-##    ["modifyvm", "{{ .Name }}", "--nat-localhostreachable1", "on"],
-#    ["modifyvm", "{{ .Name }}", "--nictype1", "virtio"],
+    ["modifyvm", "{{ .Name }}", "--rtc-use-utc", "on"],
+    ["modifyvm", "{{ .Name }}", "--nat-localhostreachable1", "on"],
   ]
   virtualbox_version_file = "/tmp/.vbox_version"
   vm_name                 = var.vm_name
@@ -321,6 +315,7 @@ build {
     skip_clean          = false
     start_retry_timeout = var.start_retry_timeout
   }
+
   provisioner "shell" {
     binary            = false
     execute_command   = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S '{{ .Path }}'"
@@ -328,25 +323,38 @@ build {
     inline = [
       "apt-get update",
       "apt-get --yes dist-upgrade",
-      "apt-get clean"
+      "apt-get clean",
+      "apt-get install --yes ntp",
+      "echo '${var.ssh_username} ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers"
     ]
     inline_shebang      = "/bin/sh -e"
     skip_clean          = false
     start_retry_timeout = var.start_retry_timeout
   }
 
-  provisioner "shell" {
-    binary            = false
-    execute_command   = "echo '${var.ssh_password}' | {{ .Vars }} sudo -E -S '{{ .Path }}'"
-    expect_disconnect = true
-    inline = [
-      "dd if=/dev/zero of=/ZEROFILL bs=16M || true",
-      "rm /ZEROFILL",
-      "sync"
-    ]
-    inline_shebang      = "/bin/sh -e"
-    skip_clean          = false
-    start_retry_timeout = var.start_retry_timeout
+  provisioner "file" {
+    source      = "k3s.sh"
+    destination = "/tmp/k3s.sh"
   }
-#
+
+  provisioner "file" {
+    source      = "helm3.sh"
+    destination = "/tmp/helm3.sh"
+  }
+
+  provisioner "shell" {
+    inline = ["/usr/bin/cloud-init status --wait"]
+  }
+
+#   Install script running as 'root'
+  provisioner "shell" {
+    script          = "${path.root}/setup_root.sh"
+    execute_command = "chmod +x {{ .Path }}; {{ .Vars }} sudo bash {{ .Path }}"
+  }
+
+  # Install script running as 'ubuntu'
+  provisioner "shell" {
+    script = "${path.root}/setup_ubuntu.sh"
+  }
+
 }

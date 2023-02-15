@@ -7,11 +7,7 @@ autoinstall:
     keyboard:
       layout: en
       variant: us
-    network:
-      version: 2
-      ethernets:
-          enp0s3:
-             dhcp4: yes
+    timezone: UTC
     storage:
       swap:
         size: 0
