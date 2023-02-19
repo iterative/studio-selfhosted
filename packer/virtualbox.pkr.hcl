@@ -9,11 +9,6 @@ packer {
   }
 }
 
-variable "apt_cache_url" {
-  type    = string
-  default = ""
-}
-
 variable "boot_wait" {
   type    = string
   default = "1s"
@@ -24,16 +19,6 @@ variable "bundle_iso" {
   default = "false"
 }
 
-variable "communicator" {
-  type    = string
-  default = "ssh"
-}
-
-variable "country" {
-  type    = string
-  default = "CA"
-}
-
 variable "cpus" {
   type    = string
   default = "1"
@@ -42,11 +27,6 @@ variable "cpus" {
 variable "disk_size" {
   type    = string
   default = "30000"
-}
-
-variable "domain" {
-  type    = string
-  default = ""
 }
 
 variable "guest_os_type" {
@@ -82,7 +62,6 @@ variable "http_port_min" {
 variable "iso_checksum" {
   type    = string
   default = "sha256:10f19c5b2b8d6db711582e0e27f5116296c34fe4b313ba45f9b201a5007056cb"
-  # default = "file:http://releases.ubuntu.com/22.04/SHA256SUMS"
 }
 
 variable "iso_file" {
@@ -98,21 +77,6 @@ variable "iso_path_external" {
 variable "keep_registered" {
   type    = string
   default = "false"
-}
-
-variable "keyboard" {
-  type    = string
-  default = "us"
-}
-
-variable "language" {
-  type    = string
-  default = "en"
-}
-
-variable "locale" {
-  type    = string
-  default = "en_US"
 }
 
 variable "memory" {
@@ -142,7 +106,7 @@ variable "ssh_agent_auth" {
 
 variable "ssh_clear_authorized_keys" {
   type    = string
-  default = "false"
+  default = "true"
 }
 
 variable "ssh_disable_agent_forwarding" {
@@ -195,12 +159,6 @@ variable "start_retry_timeout" {
   default = "5m"
 }
 
-variable "system_clock_in_utc" {
-  type    = string
-  default = "true"
-}
-
-
 variable "version" {
   type    = string
   default = "0.0.0"
@@ -228,7 +186,6 @@ variable "vnc_vrdp_port_min" {
 
 # The "legacy_isotime" function has been provided for backwards compatability,
 # but we recommend switching to the timestamp and formatdate functions.
-
 locals {
   output_directory = "build/${legacy_isotime("2006-01-02-15-04-05")}"
 }
@@ -241,7 +198,6 @@ source "virtualbox-iso" "vbox" {
     "set gfxpayload=keep <enter><wait>",
     "linux /casper/vmlinuz <wait>",
     "autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{.HTTPPort}}/' --- <enter><wait>",
-#    "autoinstall ds='nocloud-net;s=http://192.168.211.139:{{.HTTPPort}}/' --- <enter><wait>",
     "initrd /casper/initrd <enter><wait>",
     "boot<enter>"
 
