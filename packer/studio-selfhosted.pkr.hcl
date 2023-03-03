@@ -74,7 +74,7 @@ data "amazon-ami" "ubuntu" {
 
 source "amazon-ebs" "source" {
   ami_groups      = ["all"]
-  ami_name        = var.image_name
+  ami_name        = var.skip_create_ami ? "studio-selfhosted {{isotime `2006-01-02_15-04-05`}}" : var.image_name
   ami_description = var.image_description
   ami_regions     = local.aws_release_regions
   skip_create_ami = var.skip_create_ami
