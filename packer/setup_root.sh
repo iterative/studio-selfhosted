@@ -14,10 +14,10 @@ echo KUBECONFIG="/etc/rancher/k3s/k3s.yaml" >> /etc/environment
 # Install k9s
 K9S_VERSION=v0.27.3
 cd /tmp
-curl --silent -L https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_x86_64.tar.gz -o /tmp/k9s_Linux_x86_64.tar.gz
-echo "f774bb75045e361e17a4f267491c5ec66f41db7bffd996859ffb1465420af249  k9s_Linux_x86_64.tar.gz" > /tmp/k9s.sha256
+curl --silent -L https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_amd64.tar.gz -o /tmp/k9s_Linux_amd64.tar.gz
+echo "b0eb5fb0decedbee5b6bd415f72af8ce6135ffb8128f9709bc7adcd5cbfa690b  k9s_Linux_amd64.tar.gz" > /tmp/k9s.sha256
 sha256sum -c /tmp/k9s.sha256
-tar -zxvf /tmp/k9s_Linux_x86_64.tar.gz  -C /tmp
+tar -zxvf /tmp/k9s_Linux_amd64.tar.gz  -C /tmp
 mv /tmp/k9s /usr/local/bin/
 cd /root
 
