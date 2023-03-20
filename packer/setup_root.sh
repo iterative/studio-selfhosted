@@ -1,14 +1,29 @@
-#/bin/bash
+#!/bin/bash
 
 PS4='studio-selfhosted:setup_root.sh: '
 set -eux
 set -o pipefail
 
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+
 export DEBIAN_FRONTEND=noninteractive
 
 # Install K3s - script uploaded with packer
 K3S_VERSION=v1.25.7+k3s1
-INSTALL_K3S_SKIP_START="true" INSTALL_K3S_EXEC="--disable=traefik"  K3S_KUBECONFIG_MODE="644" INSTALL_K3S_VERSION=${K3S_VERSION} sh /tmp/k3s.sh -
+K3S_KUBECONFIG_MODE="644"
+INSTALL_K3S_VERSION=${K3S_VERSION}
+INSTALL_K3S_SKIP_START="true"
+
+INSTALL_K3S_EXEC=""
+INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --disable=traefik"
+INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kube-reserved cpu=500m,memory=1Gi,ephemeral-storage=1Gi"
+INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --system-reserved cpu=500m,memory=1Gi,ephemeral-storage=1Gi"
+INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --eviction-hard memory.available<0.5Gi,nodefs.available<10%"
+
+sh /home/ubuntu/.studio_install/k3s.sh -
 echo KUBECONFIG="/etc/rancher/k3s/k3s.yaml" >> /etc/environment
 
 # Install k9s
@@ -59,7 +74,7 @@ metadata:
 YAML
 
 # Install Helm - script uploaded with packer
-bash /tmp/helm3.sh
+bash /home/ubuntu/.studio_install/helm3.sh
 
 # Add Helm Iterative Repository
 helm repo add iterative https://helm.iterative.ai

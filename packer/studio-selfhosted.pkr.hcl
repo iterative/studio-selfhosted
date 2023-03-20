@@ -102,14 +102,32 @@ source "amazon-ebs" "source" {
 build {
   sources = ["source.amazon-ebs.source"]
 
+  # Install script running as 'root'
+  provisioner "shell" {
+    inline = [
+      "mkdir /home/ubuntu/.studio_install",
+    ]
+  }
+
+
   provisioner "file" {
     source      = "k3s.sh"
-    destination = "/tmp/k3s.sh"
+    destination = "/home/ubuntu/.studio_install/k3s.sh"
   }
 
   provisioner "file" {
     source      = "helm3.sh"
-    destination = "/tmp/helm3.sh"
+    destination = "/home/ubuntu/.studio_install/helm3.sh"
+  }
+
+  provisioner "file" {
+    source      = "setup_root.sh"
+    destination = "/home/ubuntu/.studio_install/setup_root.sh"
+  }
+
+  provisioner "file" {
+    source      = "setup_ubuntu.sh"
+    destination = "/home/ubuntu/.studio_install/setup_ubuntu.sh"
   }
 
   provisioner "shell" {
@@ -118,12 +136,11 @@ build {
 
   # Install script running as 'root'
   provisioner "shell" {
-    script          = "${path.root}/setup_root.sh"
-    execute_command = "chmod +x {{ .Path }}; {{ .Vars }} sudo bash {{ .Path }}"
+    inline = ["sudo bash /home/ubuntu/.studio_install/setup_root.sh"]
   }
 
   # Install script running as 'ubuntu'
   provisioner "shell" {
-    script = "${path.root}/setup_ubuntu.sh"
+    inline = ["bash /home/ubuntu/.studio_install/setup_ubuntu.sh"]
   }
 }
