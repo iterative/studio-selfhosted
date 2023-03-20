@@ -7,11 +7,12 @@ set -o pipefail
 export DEBIAN_FRONTEND=noninteractive
 
 # Install K3s - script uploaded with packer
-INSTALL_K3S_SKIP_START="true" INSTALL_K3S_EXEC="--disable=traefik"  K3S_KUBECONFIG_MODE="644" sh /tmp/k3s.sh -
+K3S_VERSION=v1.25.7+k3s1
+INSTALL_K3S_SKIP_START="true" INSTALL_K3S_EXEC="--disable=traefik"  K3S_KUBECONFIG_MODE="644" INSTALL_K3S_VERSION=${K3S_VERSION} sh /tmp/k3s.sh -
 echo KUBECONFIG="/etc/rancher/k3s/k3s.yaml" >> /etc/environment
 
 # Install k9s
-K9S_VERSION=v0.26.7
+K9S_VERSION=v0.27.3
 cd /tmp
 curl --silent -L https://github.com/derailed/k9s/releases/download/${K9S_VERSION}/k9s_Linux_x86_64.tar.gz -o /tmp/k9s_Linux_x86_64.tar.gz
 echo "f774bb75045e361e17a4f267491c5ec66f41db7bffd996859ffb1465420af249  k9s_Linux_x86_64.tar.gz" > /tmp/k9s.sha256
