@@ -1,8 +1,13 @@
-#/bin/bash
+#!/bin/bash
 
 PS4='studio-selfhosted:setup_root.sh: '
 set -eux
 set -o pipefail
+
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -59,7 +64,7 @@ metadata:
 YAML
 
 # Install Helm - script uploaded with packer
-bash /tmp/helm3.sh
+bash /home/ubuntu/.studio_install/helm3.sh
 
 # Add Helm Iterative Repository
 helm repo add iterative https://helm.iterative.ai

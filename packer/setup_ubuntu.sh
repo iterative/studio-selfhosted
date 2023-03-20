@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 PS4='studio-selfhosted:setup_ubuntu.sh: '
 set -eux
