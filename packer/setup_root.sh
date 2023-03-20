@@ -19,9 +19,9 @@ INSTALL_K3S_SKIP_START="true"
 
 INSTALL_K3S_EXEC=""
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --disable=traefik"
-INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kube-reserved cpu=500m,memory=1Gi,ephemeral-storage=1Gi"
-INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --system-reserved cpu=500m,memory=1Gi,ephemeral-storage=1Gi"
-INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --eviction-hard memory.available<0.5Gi,nodefs.available<10%"
+INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kubelet-arg kube-reserved=cpu=500m,memory=1Gi,ephemeral-storage=1Gi"
+INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kubelet-arg system-reserved=cpu=500m,memory=1Gi,ephemeral-storage=1Gi"
+INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kubelet-arg eviction-hard=memory.available<0.5Gi,nodefs.available<10%"
 
 sh /home/ubuntu/.studio_install/k3s.sh -
 echo KUBECONFIG="/etc/rancher/k3s/k3s.yaml" >> /etc/environment
