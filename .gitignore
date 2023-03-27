@@ -3,7 +3,6 @@
 .terraform
 .terraform.lock.hcl
 .env
-docker-compose.yaml
 minio/
 tls.key
 tls.crt
