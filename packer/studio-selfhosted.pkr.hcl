@@ -121,6 +121,11 @@ build {
   }
 
   provisioner "file" {
+    source      = "export-studio-logs.sh"
+    destination = "/usr/local/bin/export-studio-logs"
+  }
+
+  provisioner "file" {
     source      = "setup_root.sh"
     destination = "/home/ubuntu/.studio_install/setup_root.sh"
   }
