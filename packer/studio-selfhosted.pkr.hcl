@@ -109,7 +109,6 @@ build {
     ]
   }
 
-
   provisioner "file" {
     source      = "k3s.sh"
     destination = "/home/ubuntu/.studio_install/k3s.sh"
@@ -122,7 +121,11 @@ build {
 
   provisioner "file" {
     source      = "export-studio-logs.sh"
-    destination = "/usr/local/bin/export-studio-logs"
+    destination = "/tmp/export-studio-logs"
+  }
+
+  provisioner "shell" {
+      inline = ["mv /tmp/export-studio-logs /usr/local/bin/export-studio-logs"]
   }
 
   provisioner "file" {
