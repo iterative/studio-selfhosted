@@ -124,10 +124,6 @@ build {
     destination = "/tmp/export-studio-logs"
   }
 
-  provisioner "shell" {
-      inline = ["mv /tmp/export-studio-logs /usr/local/bin/export-studio-logs"]
-  }
-
   provisioner "file" {
     source      = "setup_root.sh"
     destination = "/home/ubuntu/.studio_install/setup_root.sh"
