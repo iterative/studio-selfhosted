@@ -12,19 +12,21 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 # Install K3s - script uploaded with packer
-K3S_VERSION=v1.25.7+k3s1
+K3S_VERSION="v1.25.7+k3s1"
 K3S_KUBECONFIG_MODE="644"
-INSTALL_K3S_VERSION=${K3S_VERSION}
+INSTALL_K3S_VERSION="${K3S_VERSION}"
 INSTALL_K3S_SKIP_START="true"
-
 INSTALL_K3S_EXEC=""
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --disable=traefik"
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kubelet-arg kube-reserved=cpu=500m,memory=1Gi,ephemeral-storage=1Gi"
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kubelet-arg system-reserved=cpu=500m,memory=1Gi,ephemeral-storage=1Gi"
 INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kubelet-arg eviction-hard=memory.available<0.5Gi,nodefs.available<10%"
-
 sh /home/ubuntu/.studio_install/k3s.sh -
 echo KUBECONFIG="/etc/rancher/k3s/k3s.yaml" >> /etc/environment
+
+# Air-Gap Install https://docs.k3s.io/installation/airgap#prepare-the-images-directory-and-k3s-binary
+mkdir -p /var/lib/rancher/k3s/agent/images/
+curl "https://github.com/k3s-io/k3s/releases/download/${K3S_VERSION}/k3s-airgap-images-amd64.tar" -L -o /var/lib/rancher/k3s/agent/images/k3s-airgap-images-amd64.tar
 
 # Install k9s
 K9S_VERSION=v0.27.3
