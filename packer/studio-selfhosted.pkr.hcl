@@ -109,7 +109,6 @@ build {
     ]
   }
 
-
   provisioner "file" {
     source      = "k3s.sh"
     destination = "/home/ubuntu/.studio_install/k3s.sh"
@@ -118,6 +117,11 @@ build {
   provisioner "file" {
     source      = "helm3.sh"
     destination = "/home/ubuntu/.studio_install/helm3.sh"
+  }
+
+  provisioner "file" {
+    source      = "export-studio-logs.sh"
+    destination = "/tmp/export-studio-logs"
   }
 
   provisioner "file" {
