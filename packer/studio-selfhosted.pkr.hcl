@@ -121,7 +121,7 @@ build {
 
   provisioner "file" {
     source      = "export-studio-logs.sh"
-    destination = "/tmp/export-studio-logs"
+    destination = "/home/ubuntu/.studio_install/export-studio-logs"
   }
 
   provisioner "file" {
