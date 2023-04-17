@@ -36,7 +36,7 @@ variable "guest_os_type" {
 
 variable "headless" {
   type    = string
-  default = "false"
+  default = "true"
 }
 
 variable "host_port_max" {
@@ -71,7 +71,7 @@ variable "iso_file" {
 
 variable "iso_path_external" {
   type    = string
-  default = "http://releases.ubuntu.com/22.04"
+  default = "https://old-releases.ubuntu.com/releases/jammy"
 }
 
 variable "keep_registered" {
