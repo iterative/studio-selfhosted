@@ -120,8 +120,8 @@ build {
   }
 
   provisioner "file" {
-    source      = "export-studio-logs.sh"
-    destination = "/home/ubuntu/.studio_install/export-studio-logs"
+    source      = "create-support-bundle.sh"
+    destination = "/home/ubuntu/.studio_install/create-support-bundle"
   }
 
   provisioner "file" {
