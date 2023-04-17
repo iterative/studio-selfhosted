@@ -81,6 +81,6 @@ bash /home/ubuntu/.studio_install/helm3.sh
 # Add Helm Iterative Repository
 helm repo add iterative https://helm.iterative.ai
 
-# Move the log exporter script
-cp /home/ubuntu/.studio_install/export-studio-logs /usr/local/bin/export-studio-logs
-chmod +x /usr/local/bin/export-studio-logs
+# Move the support bundle script
+cp /home/ubuntu/.studio_install/create-support-bundle /usr/local/bin/create-support-bundle
+chmod +x /usr/local/bin/create-support-bundle
