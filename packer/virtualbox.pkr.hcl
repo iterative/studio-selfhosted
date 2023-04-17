@@ -248,6 +248,7 @@ source "virtualbox-iso" "vbox" {
   vboxmanage = [
     ["modifyvm", "{{ .Name }}", "--rtc-use-utc", "on"],
     ["modifyvm", "{{ .Name }}", "--nat-localhostreachable1", "on"],
+    ["modifyvm", "{{ .Name }}", "--nested-hw-virt", "off"],
   ]
   virtualbox_version_file = "/tmp/.vbox_version"
   vm_name                 = var.vm_name
