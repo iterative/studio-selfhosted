@@ -3,10 +3,10 @@ autoinstall:
     version: 1
     early-commands:
     - ping -c 5 1.1.1.1
+    late-commands:
+    - ping -c 5 1.1.1.1
+    update: yes
     locale: en_US
-    keyboard:
-      layout: en
-      variant: us
     timezone: UTC
     storage:
       swap:
