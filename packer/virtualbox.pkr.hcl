@@ -26,7 +26,7 @@ variable "cpus" {
 
 variable "disk_size" {
   type    = string
-  default = "30000"
+  default = "50000"
 }
 
 variable "guest_os_type" {
@@ -61,17 +61,17 @@ variable "http_port_min" {
 
 variable "iso_checksum" {
   type    = string
-  default = "sha256:10f19c5b2b8d6db711582e0e27f5116296c34fe4b313ba45f9b201a5007056cb"
+  default = "sha256:5e38b55d57d94ff029719342357325ed3bda38fa80054f9330dc789cd2d43931"
 }
 
 variable "iso_file" {
   type    = string
-  default = "ubuntu-22.04.1-live-server-amd64.iso"
+  default = "ubuntu-22.04.2-live-server-amd64.iso"
 }
 
 variable "iso_path_external" {
   type    = string
-  default = "http://releases.ubuntu.com/22.04"
+  default = "https://releases.ubuntu.com/releases/jammy"
 }
 
 variable "keep_registered" {
@@ -287,30 +287,50 @@ build {
     skip_clean          = false
     start_retry_timeout = var.start_retry_timeout
   }
+  # Install script running as 'root'
+  provisioner "shell" {
+    inline = [
+      "mkdir /home/ubuntu/.studio_install",
+    ]
+  }
 
   provisioner "file" {
     source      = "k3s.sh"
-    destination = "/tmp/k3s.sh"
+    destination = "/home/ubuntu/.studio_install/k3s.sh"
   }
 
   provisioner "file" {
     source      = "helm3.sh"
-    destination = "/tmp/helm3.sh"
+    destination = "/home/ubuntu/.studio_install/helm3.sh"
+  }
+
+  provisioner "file" {
+    source      = "create-support-bundle.sh"
+    destination = "/home/ubuntu/.studio_install/create-support-bundle"
+  }
+
+  provisioner "file" {
+    source      = "setup_root.sh"
+    destination = "/home/ubuntu/.studio_install/setup_root.sh"
+  }
+
+  provisioner "file" {
+    source      = "setup_ubuntu.sh"
+    destination = "/home/ubuntu/.studio_install/setup_ubuntu.sh"
   }
 
   provisioner "shell" {
     inline = ["/usr/bin/cloud-init status --wait"]
   }
 
-#   Install script running as 'root'
+  # Install script running as 'root'
   provisioner "shell" {
-    script          = "${path.root}/setup_root.sh"
-    execute_command = "chmod +x {{ .Path }}; {{ .Vars }} sudo bash {{ .Path }}"
+    inline = ["sudo bash /home/ubuntu/.studio_install/setup_root.sh"]
   }
 
   # Install script running as 'ubuntu'
   provisioner "shell" {
-    script = "${path.root}/setup_ubuntu.sh"
+    inline = ["bash /home/ubuntu/.studio_install/setup_ubuntu.sh"]
   }
 
 }
