@@ -24,10 +24,6 @@ export INSTALL_K3S_EXEC="$INSTALL_K3S_EXEC --kubelet-arg eviction-hard=memory.av
 sh /home/ubuntu/.studio_install/k3s.sh -
 echo KUBECONFIG="/etc/rancher/k3s/k3s.yaml" >> /etc/environment
 
-# Air-Gap Install https://docs.k3s.io/installation/airgap#prepare-the-images-directory-and-k3s-binary
-mkdir -p /var/lib/rancher/k3s/agent/images/
-curl "https://github.com/k3s-io/k3s/releases/download/${K3S_VERSION}/k3s-airgap-images-amd64.tar" -L -o /var/lib/rancher/k3s/agent/images/k3s-airgap-images-amd64.tar
-
 # Install k9s
 export K9S_VERSION=v0.27.3
 cd /tmp
@@ -52,9 +48,8 @@ metadata:
   name: ingress-nginx
   namespace: kube-system
 spec:
-  repo: https://kubernetes.github.io/ingress-nginx
-  chart: ingress-nginx
-  version: 4.4.2
+  chart: /home/klipper-helm/ingress-nginx-4.6.0.tgz # THIS
+  jobImage:  ghcr.io/iterative/studio-selfhosted/kh-klipper-ingress:latest # THIS
   targetNamespace: ingress-nginx
 ---
 apiVersion: helm.cattle.io/v1
@@ -84,3 +79,29 @@ helm repo add iterative https://helm.iterative.ai
 # Copy the support bundle script
 cp /home/ubuntu/.studio_install/create-support-bundle /usr/local/bin/create-support-bundle
 chmod +x /usr/local/bin/create-support-bundle
+
+# Cache Images in K3s
+
+# Air-Gap Install https://docs.k3s.io/installation/airgap#prepare-the-images-directory-and-k3s-binary
+mkdir -p /var/lib/rancher/k3s/agent/images/
+curl "https://github.com/k3s-io/k3s/releases/download/${K3S_VERSION}/k3s-airgap-images-amd64.tar" -L -o /var/lib/rancher/k3s/agent/images/k3s-airgap-images-amd64.tar
+
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+docker pull -q ghcr.io/iterative/studio-selfhosted/kh-klipper-ingress:latest
+docker save ghcr.io/iterative/studio-selfhosted/kh-klipper-ingress:latest -o kh-klipper.tar
+
+docker pull -q registry.k8s.io/ingress-nginx/controller:v1.7.0@sha256:7612338342a1e7b8090bef78f2a04fffcadd548ccaabe8a47bf7758ff549a5f7
+docker save registry.k8s.io/ingress-nginx/controller:v1.7.0@sha256:7612338342a1e7b8090bef78f2a04fffcadd548ccaabe8a47bf7758ff549a5f7 -o ingress-nginx-controller.tar
+
+docker pull -q registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20230312-helm-chart-4.5.2-28-g66a760794@sha256:01d181618f270f2a96c04006f33b2699ad3ccb02da48d0f89b22abce084b292f
+docker save registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20230312-helm-chart-4.5.2-28-g66a760794@sha256:01d181618f270f2a96c04006f33b2699ad3ccb02da48d0f89b22abce084b292f -o ingress-nginx-controller-kube-webhook-certgen.tar
+
+mv *.tar /var/lib/rancher/k3s/agent/images/
+
+apt purge  docker* -y
+rm -rf /var/lib/docker/
+rm get-docker.sh
+apt autoremove -y
+apt clean -y

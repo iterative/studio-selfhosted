@@ -25,33 +25,33 @@ locals {
   }
 
   aws_release_regions = [
-    "af-south-1",
-    "ap-east-1",
-    "ap-northeast-1",
-    "ap-northeast-2",
-    "ap-northeast-3",
-    "ap-south-1",
-    "ap-south-2",
-    "ap-southeast-1",
-    "ap-southeast-2",
-    "ap-southeast-3",
-    "ap-southeast-4",
-    "ca-central-1",
-    "eu-central-1",
-    "eu-central-2",
-    "eu-north-1",
-    "eu-south-1",
-    "eu-south-2",
-    "eu-west-1",
-    "eu-west-2",
-    "eu-west-3",
-    "me-central-1",
-    "me-south-1",
-    "sa-east-1",
-    "us-east-1",
-    "us-east-2",
+#    "af-south-1",
+#    "ap-east-1",
+#    "ap-northeast-1",
+#    "ap-northeast-2",
+#    "ap-northeast-3",
+#    "ap-south-1",
+#    "ap-south-2",
+#    "ap-southeast-1",
+#    "ap-southeast-2",
+#    "ap-southeast-3",
+#    "ap-southeast-4",
+#    "ca-central-1",
+#    "eu-central-1",
+#    "eu-central-2",
+#    "eu-north-1",
+#    "eu-south-1",
+#    "eu-south-2",
+#    "eu-west-1",
+#    "eu-west-2",
+#    "eu-west-3",
+#    "me-central-1",
+#    "me-south-1",
+#    "sa-east-1",
+#    "us-east-1",
+#    "us-east-2",
     "us-west-1",
-    "us-west-2",
+#    "us-west-2",
   ]
 }
 
@@ -82,7 +82,6 @@ source "amazon-ebs" "source" {
   region        = var.aws_build_region
   instance_type = var.aws_build_instance
 
-
   source_ami   = data.amazon-ami.ubuntu.id
   ssh_username = "ubuntu"
 
@@ -102,10 +101,15 @@ source "amazon-ebs" "source" {
 build {
   sources = ["source.amazon-ebs.source"]
 
-  # Install script running as 'root'
   provisioner "shell" {
     inline = [
       "mkdir /home/ubuntu/.studio_install",
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2ve7AjkHHyTCzrnEkM2K48Yahg2Uf9wah+X0juHjxEAy5fHHFnQ2ywY6E3CBnA5wyLRBhyc9H7hCgSvIFscz9WuZrRMDb/uV0wNeH7O+taK0aT9XxfgzfKz3OUUzdnBAGf98Gnjxb1SEvziGuUW/qH6ZyvZVxx3A7GDD98gm9w7Pfz67MEP1AaMFV66tnI23h7qXZRtm6f/GS+rEeaEYSHuYQV0QBZbq6Z7BNT6mZRQv7rZan/Y2KvSm/iHbgbpACg9MHfrxb4XaAoYPkc060nyx0FezBvnmenJgk0C6oSAzKn1VUDF+KmJuD+W4S3eY0T9Tq4F7BobZm01ujgIRvFJVKfUAuuGOjYNnNRxRF4zADq6KKGJK8s4pC+0D1pNnQ16kGlCWuy/QQmeR5ZcGobSZKwojGeuu2sSb7XF4WMxOpfFG99pqi4BMEjo1C/3+9fsdG33CdzDHuXP4yARl2Eh47BjCTvGu9/1Hc1t+vwOgYglOXkApJdRp8Vw7ZSYppq3hUMK/olpy6O9Oo7viLP1Ozn7ARIv9bfGZ9AbiF4XUCUy6MP7amNZxLWpBqwwMYVG4LadYjMwbVBAWUAfFn1rFDIkwHgT95xRDuYBTIFW44tGrLwOSYQZmFXlmA85+4woG9HsAvPJgeOEiW/IZKVdHKBxNawUDI/TicEt5kiQ==' >> /home/ubuntu/.ssh/authorized_keys"
     ]
   }
 
