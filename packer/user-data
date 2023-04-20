@@ -1,0 +1,23 @@
+#cloud-config
+autoinstall:
+    version: 1
+    early-commands:
+    - ping -c 5 1.1.1.1
+    late-commands:
+    - ping -c 5 1.1.1.1
+    locale: en_US
+    timezone: UTC
+    storage:
+      swap:
+        size: 0
+      layout:
+        name: direct
+    identity:
+      hostname: studio-selfhosted-virtualbox
+      username: ubuntu
+      password: $6$O530CsnyO/PNQqqY$yRofSd/TbMr7vFEb72mSkSZSKS2OmnbGwQ2Hk4nE9Q3bOGc5NO1gkVOdvAgRVR5ewawHaR/rdCsgR35TAZqk90
+    ssh:
+      install-server: true
+      allow-pw: yes
+    user-data:
+        disable_root: false
