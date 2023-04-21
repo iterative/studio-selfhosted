@@ -108,7 +108,7 @@ docker save registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20230312-helm-ch
 mv *.tar /var/lib/rancher/k3s/agent/images/
 
 ## Cleanup docker
-apt purge  docker* -y
+apt-get purge  docker* -y
 rm -rf get-docker.sh /var/lib/docker/
-apt autoremove -y
-apt clean -y
+apt-get autoremove -y
+apt-get clean -y
