@@ -87,7 +87,7 @@ jobs:
 
       - name: Run `packer init`
         id: init
-        run: "packer init ./studio-selfhosted.pkr.hcl"
+        run: "packer init ./studio-ami.pkr.hcl"
 
       - name: Run `packer fmt -diff`
         id: fmt
@@ -95,11 +95,11 @@ jobs:
 
       - name: Run `packer validate`
         id: validate
-        run: "packer validate ./studio-selfhosted.pkr.hcl"
+        run: "packer validate ./studio-ami.pkr.hcl"
 
       - name: Run `packer build`
         id: build
-        run: "packer build ./studio-selfhosted.pkr.hcl"
+        run: "packer build ./studio-ami.pkr.hcl"
         env:
           PKR_VAR_skip_create_ami: ${{ github.event_name != 'pull_request' && 'false' || 'true' }}
           PKR_VAR_kh_klipper_tag: ${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
