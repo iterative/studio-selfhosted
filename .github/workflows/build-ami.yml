@@ -89,6 +89,10 @@ jobs:
         id: init
         run: "packer init ./studio-selfhosted.pkr.hcl"
 
+      - name: Run `packer fmt -diff`
+        id: fmt
+        run: "packer fmt -diff -recursive ."
+
       - name: Run `packer validate`
         id: validate
         run: "packer validate ./studio-selfhosted.pkr.hcl"
