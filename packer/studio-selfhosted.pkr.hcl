@@ -86,8 +86,6 @@ source "amazon-ebs" "source" {
   source_ami   = data.amazon-ami.ubuntu.id
   ssh_username = "ubuntu"
 
-  #  security_group_id = var.aws_security_group_id
-  #  subnet_id         = var.aws_subnet_id
 
   force_delete_snapshot = !var.skip_create_ami
   force_deregister      = !var.skip_create_ami
@@ -125,7 +123,7 @@ build {
 
   provisioner "file" {
     destination = "/home/ubuntu/.studio_install/setup_root.sh"
-    content     = templatefile("setup_root.sh", {
+    content = templatefile("setup_root.sh", {
       kh_klipper_tag = var.kh_klipper_tag
     })
   }

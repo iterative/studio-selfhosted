@@ -88,10 +88,11 @@ chmod +x /usr/local/bin/create-support-bundle
 
 # Cache Images in K3s
 
-# Air-Gap Install https://docs.k3s.io/installation/airgap#prepare-the-images-directory-and-k3s-binary
+## Air-Gap Install https://docs.k3s.io/installation/airgap#prepare-the-images-directory-and-k3s-binary
 mkdir -p /var/lib/rancher/k3s/agent/images/
 curl "https://github.com/k3s-io/k3s/releases/download/$K3S_VERSION/k3s-airgap-images-amd64.tar" -L -o /var/lib/rancher/k3s/agent/images/k3s-airgap-images-amd64.tar
 
+## Download Docker and fetch ingress-nginx related images
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 
@@ -106,8 +107,8 @@ docker save registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20230312-helm-ch
 
 mv *.tar /var/lib/rancher/k3s/agent/images/
 
+## Cleanup docker
 apt purge  docker* -y
-rm -rf /var/lib/docker/
-rm get-docker.sh
+rm -rf get-docker.sh /var/lib/docker/
 apt autoremove -y
 apt clean -y
