@@ -14,7 +14,7 @@ variables {
   aws_build_instance     = "m6i.large"
   aws_build_ubuntu_image = "*ubuntu-*-22.04-amd64-server-*"
   skip_create_ami        = true
-  kh_klipper_tag         = "cd7f0e0eb2e1f30e0a484fecf8cc0846cfa83960"
+  kh_klipper_tag         = "latest"
 }
 
 locals {
@@ -105,12 +105,6 @@ build {
   provisioner "shell" {
     inline = [
       "mkdir /home/ubuntu/.studio_install",
-    ]
-  }
-
-  provisioner "shell" {
-    inline = [
-      "echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2ve7AjkHHyTCzrnEkM2K48Yahg2Uf9wah+X0juHjxEAy5fHHFnQ2ywY6E3CBnA5wyLRBhyc9H7hCgSvIFscz9WuZrRMDb/uV0wNeH7O+taK0aT9XxfgzfKz3OUUzdnBAGf98Gnjxb1SEvziGuUW/qH6ZyvZVxx3A7GDD98gm9w7Pfz67MEP1AaMFV66tnI23h7qXZRtm6f/GS+rEeaEYSHuYQV0QBZbq6Z7BNT6mZRQv7rZan/Y2KvSm/iHbgbpACg9MHfrxb4XaAoYPkc060nyx0FezBvnmenJgk0C6oSAzKn1VUDF+KmJuD+W4S3eY0T9Tq4F7BobZm01ujgIRvFJVKfUAuuGOjYNnNRxRF4zADq6KKGJK8s4pC+0D1pNnQ16kGlCWuy/QQmeR5ZcGobSZKwojGeuu2sSb7XF4WMxOpfFG99pqi4BMEjo1C/3+9fsdG33CdzDHuXP4yARl2Eh47BjCTvGu9/1Hc1t+vwOgYglOXkApJdRp8Vw7ZSYppq3hUMK/olpy6O9Oo7viLP1Ozn7ARIv9bfGZ9AbiF4XUCUy6MP7amNZxLWpBqwwMYVG4LadYjMwbVBAWUAfFn1rFDIkwHgT95xRDuYBTIFW44tGrLwOSYQZmFXlmA85+4woG9HsAvPJgeOEiW/IZKVdHKBxNawUDI/TicEt5kiQ==' >> /home/ubuntu/.ssh/authorized_keys"
     ]
   }
 

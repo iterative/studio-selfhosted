@@ -61,6 +61,12 @@ spec:
   valuesContent: |-
     controller:
       watchIngressWithoutClass: true
+      image:
+        digest: ""
+      admissionWebhooks:
+        patch:
+          image:
+            digest: ""
 YAML
 
 cat << YAML >> /var/lib/rancher/k3s/server/manifests/studio.yaml
@@ -92,11 +98,11 @@ sh get-docker.sh
 docker pull -q ghcr.io/iterative/studio-selfhosted/kh-klipper-cache:${kh_klipper_tag}
 docker save ghcr.io/iterative/studio-selfhosted/kh-klipper-cache:${kh_klipper_tag} -o kh-klipper.tar
 
-docker pull -q registry.k8s.io/ingress-nginx/controller:v1.7.0@sha256:7612338342a1e7b8090bef78f2a04fffcadd548ccaabe8a47bf7758ff549a5f7
-docker save registry.k8s.io/ingress-nginx/controller:v1.7.0@sha256:7612338342a1e7b8090bef78f2a04fffcadd548ccaabe8a47bf7758ff549a5f7 -o ingress-nginx-controller.tar
+docker pull -q registry.k8s.io/ingress-nginx/controller:v1.7.0
+docker save registry.k8s.io/ingress-nginx/controller:v1.7.0 -o ingress-nginx-controller.tar
 
-docker pull -q registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20230312-helm-chart-4.5.2-28-g66a760794@sha256:01d181618f270f2a96c04006f33b2699ad3ccb02da48d0f89b22abce084b292f
-docker save registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20230312-helm-chart-4.5.2-28-g66a760794@sha256:01d181618f270f2a96c04006f33b2699ad3ccb02da48d0f89b22abce084b292f -o ingress-nginx-controller-kube-webhook-certgen.tar
+docker pull -q registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20230312-helm-chart-4.5.2-28-g66a760794
+docker save registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20230312-helm-chart-4.5.2-28-g66a760794 -o ingress-nginx-controller-kube-webhook-certgen.tar
 
 mv *.tar /var/lib/rancher/k3s/agent/images/
 
