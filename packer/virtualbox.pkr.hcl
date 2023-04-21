@@ -10,8 +10,8 @@ packer {
 }
 
 variables {
-  cpus              = 2
-  memory            = 2048
+  cpus              = 4
+  memory            = 8192
   disk_size         = "50000"
   headless          = false
   iso_path_external = "https://releases.ubuntu.com/releases/jammy"
@@ -24,6 +24,7 @@ variables {
   ssh_password      = "ubuntu"
   ssh_port          = "22"
   vm_name           = "studio-selfhosted"
+  kh_klipper_tag    = "latest"
 }
 
 
@@ -150,8 +151,10 @@ build {
   }
 
   provisioner "file" {
-    source      = "setup_root.sh"
     destination = "/home/ubuntu/.studio_install/setup_root.sh"
+    content = templatefile("setup_root.sh", {
+      kh_klipper_tag = var.kh_klipper_tag
+    })
   }
 
   provisioner "file" {
