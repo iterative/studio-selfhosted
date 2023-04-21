@@ -34,7 +34,6 @@ jobs:
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -52,15 +51,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - name: Set tag
-        id: tag
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "tag=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "tag=latest" >> "$GITHUB_OUTPUT"
-          fi
-
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
@@ -71,7 +61,7 @@ jobs:
           file: packer/kh-klipper.dockerfile
           push: true
           tags:
-            ghcr.io/${{ github.repository }}/kh-klipper-cache:${{ steps.tag.outputs.tag }}
+            ghcr.io/${{ github.repository }}/kh-klipper-cache:${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
 
   build-ami:
     needs:
@@ -108,4 +98,5 @@ jobs:
         run: "packer build ./studio-selfhosted.pkr.hcl"
         env:
           PKR_VAR_skip_create_ami: ${{ github.event_name != 'pull_request' && 'false' || 'true' }}
+          PKR_VAR_kh_klipper_tag: ${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
 

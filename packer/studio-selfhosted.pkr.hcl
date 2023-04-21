@@ -14,6 +14,7 @@ variables {
   aws_build_instance     = "m6i.large"
   aws_build_ubuntu_image = "*ubuntu-*-22.04-amd64-server-*"
   skip_create_ami        = true
+  kh_klipper_tag         = "cd7f0e0eb2e1f30e0a484fecf8cc0846cfa83960"
 }
 
 locals {
@@ -25,33 +26,33 @@ locals {
   }
 
   aws_release_regions = [
-#    "af-south-1",
-#    "ap-east-1",
-#    "ap-northeast-1",
-#    "ap-northeast-2",
-#    "ap-northeast-3",
-#    "ap-south-1",
-#    "ap-south-2",
-#    "ap-southeast-1",
-#    "ap-southeast-2",
-#    "ap-southeast-3",
-#    "ap-southeast-4",
-#    "ca-central-1",
-#    "eu-central-1",
-#    "eu-central-2",
-#    "eu-north-1",
-#    "eu-south-1",
-#    "eu-south-2",
-#    "eu-west-1",
-#    "eu-west-2",
-#    "eu-west-3",
-#    "me-central-1",
-#    "me-south-1",
-#    "sa-east-1",
-#    "us-east-1",
-#    "us-east-2",
+    "af-south-1",
+    "ap-east-1",
+    "ap-northeast-1",
+    "ap-northeast-2",
+    "ap-northeast-3",
+    "ap-south-1",
+    "ap-south-2",
+    "ap-southeast-1",
+    "ap-southeast-2",
+    "ap-southeast-3",
+    "ap-southeast-4",
+    "ca-central-1",
+    "eu-central-1",
+    "eu-central-2",
+    "eu-north-1",
+    "eu-south-1",
+    "eu-south-2",
+    "eu-west-1",
+    "eu-west-2",
+    "eu-west-3",
+    "me-central-1",
+    "me-south-1",
+    "sa-east-1",
+    "us-east-1",
+    "us-east-2",
     "us-west-1",
-#    "us-west-2",
+    "us-west-2",
   ]
 }
 
@@ -129,8 +130,10 @@ build {
   }
 
   provisioner "file" {
-    source      = "setup_root.sh"
     destination = "/home/ubuntu/.studio_install/setup_root.sh"
+    content     = templatefile("setup_root.sh", {
+      kh_klipper_tag = var.kh_klipper_tag
+    })
   }
 
   provisioner "file" {
