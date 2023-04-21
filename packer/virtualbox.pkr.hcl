@@ -9,187 +9,29 @@ packer {
   }
 }
 
-variable "boot_wait" {
-  type    = string
-  default = "1s"
+variables {
+  cpus              = 2
+  memory            = 2048
+  disk_size         = "50000"
+  headless          = false
+  iso_path_external = "https://releases.ubuntu.com/releases/jammy"
+  iso_file          = "ubuntu-22.04.2-live-server-amd64.iso"
+  iso_checksum      = "sha256:5e38b55d57d94ff029719342357325ed3bda38fa80054f9330dc789cd2d43931"
+  keep_registered   = false
+  packer_cache_dir  = "${env("PACKER_CACHE_DIR")}"
+  skip_export       = false
+  ssh_username      = "ubuntu"
+  ssh_password      = "ubuntu"
+  ssh_port          = "22"
+  vm_name           = "studio-selfhosted"
 }
 
-variable "bundle_iso" {
-  type    = string
-  default = "false"
-}
-
-variable "cpus" {
-  type    = string
-  default = "1"
-}
-
-variable "disk_size" {
-  type    = string
-  default = "50000"
-}
-
-variable "guest_os_type" {
-  type    = string
-  default = "Ubuntu_64"
-}
-
-variable "headless" {
-  type    = string
-  default = "false"
-}
-
-variable "host_port_max" {
-  type    = string
-  default = "4444"
-}
-
-variable "host_port_min" {
-  type    = string
-  default = "2222"
-}
-
-variable "http_port_max" {
-  type    = string
-  default = "9000"
-}
-
-variable "http_port_min" {
-  type    = string
-  default = "8000"
-}
-
-variable "iso_checksum" {
-  type    = string
-  default = "sha256:5e38b55d57d94ff029719342357325ed3bda38fa80054f9330dc789cd2d43931"
-}
-
-variable "iso_file" {
-  type    = string
-  default = "ubuntu-22.04.2-live-server-amd64.iso"
-}
-
-variable "iso_path_external" {
-  type    = string
-  default = "https://releases.ubuntu.com/releases/jammy"
-}
-
-variable "keep_registered" {
-  type    = string
-  default = "false"
-}
-
-variable "memory" {
-  type    = string
-  default = "2048"
-}
-
-variable "packer_cache_dir" {
-  type    = string
-  default = "${env("PACKER_CACHE_DIR")}"
-}
-
-variable "shutdown_timeout" {
-  type    = string
-  default = "30m"
-}
-
-variable "skip_export" {
-  type    = string
-  default = "false"
-}
-
-variable "ssh_agent_auth" {
-  type    = string
-  default = "false"
-}
-
-variable "ssh_clear_authorized_keys" {
-  type    = string
-  default = "true"
-}
-
-variable "ssh_disable_agent_forwarding" {
-  type    = string
-  default = "false"
-}
-
-variable "ssh_file_transfer_method" {
-  type    = string
-  default = "scp"
-}
-
-variable "ssh_handshake_attempts" {
-  type    = string
-  default = "100"
-}
-
-variable "ssh_keep_alive_interval" {
-  type    = string
-  default = "5s"
-}
-
-variable "ssh_username" {
-  type    = string
-  default = "ubuntu"
-}
-
-variable "ssh_password" {
-  type    = string
-  default = "ubuntu"
-}
-
-variable "ssh_port" {
-  type    = string
-  default = "22"
-}
-
-variable "ssh_pty" {
-  type    = string
-  default = "false"
-}
-
-variable "ssh_timeout" {
-  type    = string
-  default = "60m"
-}
-
-variable "start_retry_timeout" {
-  type    = string
-  default = "5m"
-}
-
-variable "version" {
-  type    = string
-  default = "0.0.0"
-}
-
-variable "vm_name" {
-  type    = string
-  default = "studio-selfhosted"
-}
-
-variable "vnc_vrdp_bind_address" {
-  type    = string
-  default = "127.0.0.1"
-}
-
-variable "vnc_vrdp_port_max" {
-  type    = string
-  default = "6000"
-}
-
-variable "vnc_vrdp_port_min" {
-  type    = string
-  default = "5900"
-}
 
 # The "legacy_isotime" function has been provided for backwards compatability,
 # but we recommend switching to the timestamp and formatdate functions.
 locals {
   output_directory = "build/${legacy_isotime("2006-01-02-15-04-05")}"
 }
-
 
 source "virtualbox-iso" "vbox" {
   boot_command = [
@@ -200,28 +42,27 @@ source "virtualbox-iso" "vbox" {
     "autoinstall ds='nocloud-net;s=http://{{ .HTTPIP }}:{{.HTTPPort}}/' --- <enter><wait>",
     "initrd /casper/initrd <enter><wait>",
     "boot<enter>"
-
   ]
-  boot_wait                = var.boot_wait
-  bundle_iso               = var.bundle_iso
-  cpus                     = var.cpus
-  disk_size                = var.disk_size
-  format                   = "ova"
-  guest_additions_mode     = "disable"
-  guest_os_type            = var.guest_os_type
-#  hard_drive_discard       = false
-#  hard_drive_interface     = "sata"
-#  hard_drive_nonrotational = false
-  headless                 = var.headless
-  host_port_max            = var.host_port_max
-  host_port_min            = var.host_port_min
-  http_directory           = "./"
-  http_port_max            = var.http_port_max
-  http_port_min            = var.http_port_min
-  iso_checksum             = var.iso_checksum
-#  iso_interface            = "sata"
-  iso_target_extension     = "iso"
-  iso_target_path          = "${regex_replace(var.packer_cache_dir, "^$", "/tmp")}/${var.iso_file}"
+  boot_wait            = "1s"
+  bundle_iso           = false
+  cpus                 = var.cpus
+  disk_size            = var.disk_size
+  format               = "ova"
+  guest_additions_mode = "disable"
+  guest_os_type        = "Ubuntu_64"
+  #  hard_drive_discard       = false
+  #  hard_drive_interface     = "sata"
+  #  hard_drive_nonrotational = false
+  headless       = var.headless
+  host_port_min  = 2222
+  host_port_max  = 4444
+  http_directory = "./"
+  http_port_min  = 8000
+  http_port_max  = 9000
+  iso_checksum   = var.iso_checksum
+  #  iso_interface            = "sata"
+  iso_target_extension = "iso"
+  iso_target_path      = "${regex_replace(var.packer_cache_dir, "^$", "/tmp")}/${var.iso_file}"
   iso_urls = [
     "${var.iso_path_external}/${var.iso_file}"
   ]
@@ -229,36 +70,35 @@ source "virtualbox-iso" "vbox" {
   memory                       = var.memory
   output_directory             = local.output_directory
   post_shutdown_delay          = "0s"
-#  sata_port_count              = "1"
   shutdown_command             = "echo '${var.ssh_password}' | sudo -E -S poweroff"
-  shutdown_timeout             = var.shutdown_timeout
+  shutdown_timeout             = "10m"
   skip_export                  = var.skip_export
   skip_nat_mapping             = false
-  ssh_agent_auth               = var.ssh_agent_auth
-  ssh_clear_authorized_keys    = var.ssh_clear_authorized_keys
-  ssh_disable_agent_forwarding = var.ssh_disable_agent_forwarding
-  ssh_file_transfer_method     = var.ssh_file_transfer_method
-  ssh_handshake_attempts       = var.ssh_handshake_attempts
-  ssh_keep_alive_interval      = var.ssh_keep_alive_interval
+  ssh_agent_auth               = false
+  ssh_clear_authorized_keys    = true
+  ssh_disable_agent_forwarding = false
+  ssh_file_transfer_method     = "scp"
+  ssh_handshake_attempts       = 100
+  ssh_keep_alive_interval      = "5s"
+  ssh_username                 = var.ssh_username
   ssh_password                 = var.ssh_password
   ssh_port                     = var.ssh_port
-  ssh_pty                      = var.ssh_pty
-  ssh_timeout                  = var.ssh_timeout
-  ssh_username                 = var.ssh_username
+  ssh_pty                      = false
+  ssh_timeout                  = "30m"
   vboxmanage = [
     ["modifyvm", "{{ .Name }}", "--rtc-use-utc", "on"],
     ["modifyvm", "{{ .Name }}", "--nat-localhostreachable1", "on"],
   ]
   virtualbox_version_file = "/tmp/.vbox_version"
   vm_name                 = var.vm_name
-  vrdp_bind_address       = var.vnc_vrdp_bind_address
-  vrdp_port_max           = var.vnc_vrdp_port_max
-  vrdp_port_min           = var.vnc_vrdp_port_min
+  vrdp_bind_address       = "0.0.0.0"
+  vrdp_port_min           = 5900
+  vrdp_port_max           = 6000
 }
 
 build {
 
-  sources = [ "source.virtualbox-iso.vbox"]
+  sources = ["source.virtualbox-iso.vbox"]
 
   provisioner "shell" {
     binary            = false
@@ -269,7 +109,7 @@ build {
     ]
     inline_shebang      = "/bin/sh -e"
     skip_clean          = false
-    start_retry_timeout = var.start_retry_timeout
+    start_retry_timeout = "5m"
   }
 
   provisioner "shell" {
@@ -285,7 +125,7 @@ build {
     ]
     inline_shebang      = "/bin/sh -e"
     skip_clean          = false
-    start_retry_timeout = var.start_retry_timeout
+    start_retry_timeout = "5m"
   }
   # Install script running as 'root'
   provisioner "shell" {
