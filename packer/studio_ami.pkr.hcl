@@ -11,7 +11,7 @@ variables {
   image_name             = "studio-selfhosted"
   image_description      = "Iterative Studio Selfhosted - {{isotime `2006-01-02`}}"
   aws_build_region       = "us-west-1"
-  aws_build_instance     = "m6i.large"
+  aws_build_instance     = "c6a.large"
   aws_build_ubuntu_image = "*ubuntu-*-22.04-amd64-server-*"
   skip_create_ami        = true
   kh_klipper_tag         = "latest"
@@ -81,7 +81,8 @@ source "amazon-ebs" "source" {
   skip_create_ami = var.skip_create_ami
 
   region        = var.aws_build_region
-  instance_type = var.aws_build_instance
+  spot_price    = "0.2"
+  spot_instance_types = [var.aws_build_instance]
 
   source_ami   = data.amazon-ami.ubuntu.id
   ssh_username = "ubuntu"
