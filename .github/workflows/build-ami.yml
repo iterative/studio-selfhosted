@@ -121,7 +121,16 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
-          cml runner --cloud-metadata="actions_link=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" --cloud-startup-script=$(echo 'curl https://github.com/${{ github.actor }}.keys >> /home/ubuntu/.ssh/authorized_keys' | base64 -w 0) --single --labels=aws-test --cloud=aws --cloud-image="studio-virtualbox-builder" --cloud-region=us-west-1 --cloud-type=t3.small
+          cml runner \
+          --cloud-metadata="actions_link=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          --cloud-startup-script=$(echo 'curl https://github.com/${{ github.actor }}.keys >> /home/ubuntu/.ssh/authorized_keys' | base64 -w 0) \
+          --single \
+          --labels=aws-test \
+          --cloud=aws \
+          --cloud-image="studio-virtualbox-builder" \
+          --cloud-region=us-west-1 \
+          --cloud-type=t3.small \
+          --cloud-aws-security-group=sg-0da3ac1cdc286dd4e
 
   build-aws-ami:
     needs:
@@ -170,7 +179,7 @@ jobs:
       - build-virtualbox-ami-builder
       - create-virtualbox-runner
       - build-kh-klipper-docker
-    runs-on: [self-hosted, aws-test]
+    runs-on: [aws-test]
     environment: test
     steps:
       - uses: actions/checkout@v3
