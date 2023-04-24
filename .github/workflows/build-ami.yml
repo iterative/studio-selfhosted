@@ -134,7 +134,7 @@ jobs:
           --cloud-aws-subnet=subnet-01c5f8c843b5c7759 
           
 
-  build-aws-ami:
+  build-studio-aws-ami:
     needs:
       - build-kh-klipper-docker
     environment: aws
@@ -176,7 +176,7 @@ jobs:
           PKR_VAR_kh_klipper_tag: ${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
 
 
-  build-virtualbox:
+  build-virtualbox-image:
     needs:
       - create-virtualbox-runner
       - build-kh-klipper-docker
