@@ -80,10 +80,10 @@ source "amazon-ebs" "source" {
   ami_regions     = local.aws_release_regions
   skip_create_ami = var.skip_create_ami
 
-  region        = var.aws_build_region
-  spot_price    = "0.2"
+  region              = var.aws_build_region
+  spot_price          = "0.2"
   spot_instance_types = [var.aws_build_instance]
-#  instance_type = var.aws_build_instance
+  #  instance_type = var.aws_build_instance
 
   source_ami   = data.amazon-ami.ubuntu.id
   ssh_username = "ubuntu"

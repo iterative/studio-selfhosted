@@ -131,8 +131,8 @@ jobs:
           --cloud-region=us-west-1 \
           --cloud-type=c5n.metal \
           --cloud-aws-security-group=sg-0da3ac1cdc286dd4e \
-          --cloud-aws-subnet=subnet-01c5f8c843b5c7759 
-          
+          --cloud-aws-subnet=subnet-01c5f8c843b5c7759 \
+          --cloud-hdd-size 100
 
   build-studio-aws-ami:
     needs:
@@ -183,6 +183,9 @@ jobs:
     runs-on: [aws-test]
     environment: test
     timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: packer
     steps:
       - uses: actions/checkout@v3
       - name: CML Version Test
