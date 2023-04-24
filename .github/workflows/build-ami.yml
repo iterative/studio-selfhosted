@@ -130,7 +130,9 @@ jobs:
           --cloud-image="studio-virtualbox-builder" \
           --cloud-region=us-west-1 \
           --cloud-type=t3.small \
-          --cloud-aws-security-group=sg-0da3ac1cdc286dd4e
+          --cloud-aws-security-group=sg-0da3ac1cdc286dd4e \
+          --cloud-spot true \
+          --cloud-spot-price=4.8
 
   build-aws-ami:
     needs:
@@ -174,7 +176,7 @@ jobs:
           PKR_VAR_kh_klipper_tag: ${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
 
 
-  test-virtualbox-runner:
+  build-virtualbox:
     needs:
       - create-virtualbox-runner
       - build-kh-klipper-docker
@@ -186,11 +188,28 @@ jobs:
         run: |
           which cml
           cml --version
-      - name: Do work
-        run: |
-          packer --version
-          function spin() {
-            echo "work for 30"
-            timeout --preserve-status 30s bash -c 'md5sum /dev/zero'
-          }
-          spin || true
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: "1.8.6"
+
+      - name: Run `packer init`
+        id: init
+        run: "packer init ./studio_virtualbox.pkr.hcl"
+
+      - name: Run `packer fmt -diff`
+        id: fmt
+        run: "packer fmt -diff -recursive ."
+
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate ./studio_virtualbox.pkr.hcl"
+
+      - name: Run `packer build`
+        id: build
+        run: "packer build ./studio_virtualbox.pkr.hcl"
+        env:
+          PKR_VAR_kh_klipper_tag: ${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
+
