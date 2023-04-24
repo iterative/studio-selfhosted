@@ -140,13 +140,19 @@ jobs:
       - create-virtualbox-runner
       - build-kh-klipper-docker
     runs-on: [aws-test]
-    environment: test
+    environment: virtualbox
     timeout-minutes: 60
     defaults:
       run:
         working-directory: packer
     steps:
       - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-west-1
+          role-to-assume: arn:aws:iam::260760892802:role/studio-virtualbox-builder
+          role-duration-seconds: 3600
+
       - name: CML Version Test
         run: |
           which cml
@@ -180,3 +186,10 @@ jobs:
       - name: Zip artifacts
         id: compress
         run: gzip build/*
+
+      - name: Upload artifacts
+        id: upload
+#        if:  ${{ github.event_name != 'pull_request' }}
+        run: |
+            aws --version
+            aws s3 cp build/*.gz s3://studio-selfhosted-artifacts/virtualbox/ --recursive --storage-class STANDARD_IA

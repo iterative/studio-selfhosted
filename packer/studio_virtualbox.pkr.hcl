@@ -23,7 +23,7 @@ variables {
   ssh_username      = "ubuntu"
   ssh_password      = "ubuntu"
   ssh_port          = "22"
-  vm_name           = "${legacy_isotime("2006-01-02_15-04")}_studio-selfhosted"
+  vm_name           = "{{isotime `2006-01-02_15-04`}}_studio-selfhosted"
   kh_klipper_tag    = "latest"
 }
 
