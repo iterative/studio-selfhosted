@@ -23,7 +23,7 @@ variables {
   ssh_username      = "ubuntu"
   ssh_password      = "ubuntu"
   ssh_port          = "22"
-  vm_name           = "studio-selfhosted"
+  vm_name           = "${legacy_isotime("2006-01-02_15-04")}_studio-selfhosted"
   kh_klipper_tag    = "latest"
 }
 
@@ -31,7 +31,7 @@ variables {
 # The "legacy_isotime" function has been provided for backwards compatability,
 # but we recommend switching to the timestamp and formatdate functions.
 locals {
-  output_directory = "build/${legacy_isotime("2006-01-02-15-04-05")}"
+  output_directory = "build/"
 }
 
 source "virtualbox-iso" "vbox" {

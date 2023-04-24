@@ -141,7 +141,7 @@ jobs:
       - build-kh-klipper-docker
     runs-on: [aws-test]
     environment: test
-    timeout-minutes: 120
+    timeout-minutes: 60
     defaults:
       run:
         working-directory: packer
@@ -177,3 +177,6 @@ jobs:
           PKR_VAR_kh_klipper_tag: ${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
           PKR_VAR_headless: true
 
+      - name: Zip artifacts
+        id: compress
+        run: gzip build/*

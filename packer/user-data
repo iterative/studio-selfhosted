@@ -13,7 +13,7 @@ autoinstall:
       layout:
         name: direct
     identity:
-      hostname: studio-selfhosted-virtualbox
+      hostname: studio-selfhosted
       username: ubuntu
       password: $6$O530CsnyO/PNQqqY$yRofSd/TbMr7vFEb72mSkSZSKS2OmnbGwQ2Hk4nE9Q3bOGc5NO1gkVOdvAgRVR5ewawHaR/rdCsgR35TAZqk90
     ssh:
