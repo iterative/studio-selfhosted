@@ -16,7 +16,6 @@ on:
       - .github/workflows/build-ami.yml
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # Cancel in-progress jobs or runs for current workflow
-  cancel-in-progress: true
 permissions:
   contents: read
   id-token: write
@@ -63,47 +62,47 @@ jobs:
           tags:
             ghcr.io/${{ github.repository }}/kh-klipper-cache:${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
 
-  build-virtualbox-ami-builder:
-    environment: aws
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: packer
-    steps:
-      - uses: actions/checkout@v3
-      - uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-region: us-west-1
-          role-to-assume: arn:aws:iam::260760892802:role/studio-selfhosted-packer
-          role-duration-seconds: 3600
-
-      - name: Setup `packer`
-        uses: hashicorp/setup-packer@main
-        id: setup
-        with:
-          version: "1.8.6"
-
-      - name: Run `packer init`
-        id: init
-        run: "packer init ./virtualbox_ami_builder.pkr.hcl"
-
-      - name: Run `packer fmt -diff`
-        id: fmt
-        run: "packer fmt -diff -recursive ."
-
-      - name: Run `packer validate`
-        id: validate
-        run: "packer validate ./virtualbox_ami_builder.pkr.hcl"
-
-      - name: Run `packer build`
-        id: build
-        run: "packer build ./virtualbox_ami_builder.pkr.hcl"
-        env:
-          PKR_VAR_skip_create_ami: ${{ github.event_name != 'pull_request' && 'false' || 'true' }}
+#  build-virtualbox-ami-builder:
+#    environment: aws
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: packer
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: aws-actions/configure-aws-credentials@v2
+#        with:
+#          aws-region: us-west-1
+#          role-to-assume: arn:aws:iam::260760892802:role/studio-selfhosted-packer
+#          role-duration-seconds: 3600
+#
+#      - name: Setup `packer`
+#        uses: hashicorp/setup-packer@main
+#        id: setup
+#        with:
+#          version: "1.8.6"
+#
+#      - name: Run `packer init`
+#        id: init
+#        run: "packer init ./virtualbox_ami_builder.pkr.hcl"
+#
+#      - name: Run `packer fmt -diff`
+#        id: fmt
+#        run: "packer fmt -diff -recursive ."
+#
+#      - name: Run `packer validate`
+#        id: validate
+#        run: "packer validate ./virtualbox_ami_builder.pkr.hcl"
+#
+#      - name: Run `packer build`
+#        id: build
+#        run: "packer build ./virtualbox_ami_builder.pkr.hcl"
+#        env:
+#          PKR_VAR_skip_create_ami: ${{ github.event_name != 'pull_request' && 'false' || 'true' }}
 
   create-virtualbox-runner:
-    needs:
-      - build-virtualbox-ami-builder
+#    needs:
+#      - build-virtualbox-ami-builder
     environment: aws
     runs-on: ubuntu-latest
     steps:
@@ -122,6 +121,7 @@ jobs:
           REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
         run: |
           cml runner \
+          --name="studio-virtualbox-builder-${{ github.run_id }}" \
           --cloud-metadata="actions_link=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
           --cloud-startup-script=$(echo 'curl https://github.com/${{ github.actor }}.keys >> /home/ubuntu/.ssh/authorized_keys' | base64 -w 0) \
           --single \
@@ -176,7 +176,6 @@ jobs:
 
   test-virtualbox-runner:
     needs:
-      - build-virtualbox-ami-builder
       - create-virtualbox-runner
       - build-kh-klipper-docker
     runs-on: [aws-test]
@@ -189,9 +188,9 @@ jobs:
           cml --version
       - name: Do work
         run: |
+          packer --version
           function spin() {
             echo "work for 30"
             timeout --preserve-status 30s bash -c 'md5sum /dev/zero'
           }
-          spin || true
           spin || true
