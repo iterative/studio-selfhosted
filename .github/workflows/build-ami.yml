@@ -129,10 +129,12 @@ jobs:
           --cloud=aws \
           --cloud-image="studio-virtualbox-builder" \
           --cloud-region=us-west-1 \
-          --cloud-type=t3.small \
+          --cloud-type=c5n.metal \
           --cloud-aws-security-group=sg-0da3ac1cdc286dd4e \
+          --cloud-aws-subnet=subnet-01c5f8c843b5c7759 \
           --cloud-spot true \
           --cloud-spot-price=4.8
+          
 
   build-aws-ami:
     needs:
@@ -182,6 +184,7 @@ jobs:
       - build-kh-klipper-docker
     runs-on: [aws-test]
     environment: test
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v3
       - name: CML Version Test
