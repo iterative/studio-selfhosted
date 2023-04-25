@@ -73,8 +73,8 @@ build {
   }
 
   provisioner "file" {
-    source      = "setup_virtualbox.sh"
-    destination = "/home/ubuntu/setup_virtualbox.sh"
+    source      = "install_virtualbox.sh"
+    destination = "/home/ubuntu/install_virtualbox.sh"
   }
 
   provisioner "shell" {
@@ -105,7 +105,7 @@ build {
 
   # Install script running as 'root'
   provisioner "shell" {
-    inline              = ["sudo bash /home/ubuntu/setup_virtualbox.sh"]
+    inline              = ["sudo bash /home/ubuntu/install_virtualbox.sh"]
     start_retry_timeout = "5m"
   }
 }

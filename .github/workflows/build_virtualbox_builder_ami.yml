@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
     paths:
       - packer/virtualbox_ami_builder.pkr.hcl
-      - packer/setup_virtualbox.sh
+      - packer/install_virtualbox.sh
       - .github/workflows/build_virtualbox_ami.yml
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # Cancel in-progress jobs or runs for current workflow
