@@ -15,7 +15,7 @@ while [ $# -ne 0 ]; do
   case $1 in
     --namespace)
       shift 1
-      export NAMESPACE=$1
+      NAMESPACE=$1
       shift 1
       ;;
     -h|--help)
