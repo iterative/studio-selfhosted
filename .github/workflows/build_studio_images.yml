@@ -192,4 +192,4 @@ jobs:
 #        if:  ${{ github.event_name != 'pull_request' }}
         run: |
             aws --version
-            aws s3 cp build/*.gz s3://studio-selfhosted-artifacts/virtualbox/ --storage-class STANDARD_IA
+            aws s3 cp build/*.gz s3://iterative-studio-selfhosted/virtualbox/ --storage-class STANDARD_IA --region us-east-2
