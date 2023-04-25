@@ -107,5 +107,6 @@ build {
   provisioner "shell" {
     inline              = ["sudo bash /home/ubuntu/install_virtualbox.sh"]
     start_retry_timeout = "5m"
+    expect_disconnect   = true
   }
 }

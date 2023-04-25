@@ -187,8 +187,8 @@ jobs:
         id: compress
         run: gzip build/*
 
-      - name: Upload artifacts
+      - name: Upload VirtualBox image to S3
         id: upload
-#        if:  ${{ github.event_name != 'pull_request' }}
+        if:  ${{ github.event_name != 'pull_request' }}
         run: |
             aws s3 cp build/*.gz s3://iterative-studio-selfhosted/virtualbox/ --storage-class STANDARD_IA --region us-east-2
