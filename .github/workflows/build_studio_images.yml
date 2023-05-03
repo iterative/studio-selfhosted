@@ -137,7 +137,7 @@ jobs:
       - create-virtualbox-runner
       - build-kh-klipper-docker
     runs-on: [studio-selfhosted-virtualbox-builder]
-    environment: virtualbox
+    environment: aws
     timeout-minutes: 60
     defaults:
       run:
@@ -147,7 +147,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-west-1
-          role-to-assume: arn:aws:iam::260760892802:role/studio-virtualbox-builder
+          role-to-assume: arn:aws:iam::260760892802:role/studio-selfhosted-packer
           role-duration-seconds: 3600
 
       - name: CML Version Test
