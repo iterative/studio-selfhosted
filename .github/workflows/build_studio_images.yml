@@ -1,7 +1,7 @@
 name: Build Studio Images
 on:
   schedule:
-    - cron: '0 12 1 * *' # Every 1st day of the month at 12:00 UTC
+    - cron: '0 12 * * Mon' # Every Monday at 12:00 UTC
   push:
     branches: [main]
     paths:
@@ -84,7 +84,7 @@ jobs:
           --cloud-metadata="actions_link=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
           --cloud-startup-script=$(echo 'curl https://github.com/${{ github.actor }}.keys >> /home/ubuntu/.ssh/authorized_keys' | base64 -w 0) \
           --single \
-          --labels=aws-test \
+          --labels=studio-selfhosted-virtualbox-builder \
           --cloud=aws \
           --cloud-image="studio-virtualbox-builder" \
           --cloud-region=us-west-1 \
@@ -139,7 +139,7 @@ jobs:
     needs:
       - create-virtualbox-runner
       - build-kh-klipper-docker
-    runs-on: [aws-test]
+    runs-on: [studio-selfhosted-virtualbox-builder]
     environment: virtualbox
     timeout-minutes: 60
     defaults:
