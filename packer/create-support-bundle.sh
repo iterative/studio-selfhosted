@@ -29,7 +29,7 @@ while [ $# -ne 0 ]; do
   esac
 done
 
-mkdir "$LOG_DIR"
+mkdir -p "$LOG_DIR"
 
 get_logs() {
     POD_NAME=$(kubectl get pods --namespace $NAMESPACE -l "app.kubernetes.io/name=studio-$1,app.kubernetes.io/instance=studio" -o jsonpath="{.items[0].metadata.name}")
