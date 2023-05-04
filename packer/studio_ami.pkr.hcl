@@ -11,9 +11,10 @@ variables {
   image_name             = "studio-selfhosted"
   image_description      = "Iterative Studio Selfhosted - {{isotime `2006-01-02`}}"
   aws_build_region       = "us-west-1"
-  aws_build_instance     = "m6i.large"
+  aws_build_instance     = "c6a.large"
   aws_build_ubuntu_image = "*ubuntu-*-22.04-amd64-server-*"
   skip_create_ami        = true
+  kh_klipper_tag         = "latest"
 }
 
 locals {
@@ -79,15 +80,14 @@ source "amazon-ebs" "source" {
   ami_regions     = local.aws_release_regions
   skip_create_ami = var.skip_create_ami
 
-  region        = var.aws_build_region
-  instance_type = var.aws_build_instance
-
+  region              = var.aws_build_region
+  spot_price          = "0.2"
+  spot_instance_types = [var.aws_build_instance]
+  #  instance_type = var.aws_build_instance
 
   source_ami   = data.amazon-ami.ubuntu.id
   ssh_username = "ubuntu"
 
-  #  security_group_id = var.aws_security_group_id
-  #  subnet_id         = var.aws_subnet_id
 
   force_delete_snapshot = !var.skip_create_ami
   force_deregister      = !var.skip_create_ami
@@ -102,7 +102,6 @@ source "amazon-ebs" "source" {
 build {
   sources = ["source.amazon-ebs.source"]
 
-  # Install script running as 'root'
   provisioner "shell" {
     inline = [
       "mkdir /home/ubuntu/.studio_install",
@@ -125,8 +124,10 @@ build {
   }
 
   provisioner "file" {
-    source      = "setup_root.sh"
     destination = "/home/ubuntu/.studio_install/setup_root.sh"
+    content = templatefile("setup_root.sh", {
+      kh_klipper_tag = var.kh_klipper_tag
+    })
   }
 
   provisioner "file" {

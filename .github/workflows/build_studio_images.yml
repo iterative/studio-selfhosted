@@ -1,0 +1,191 @@
+name: Build Studio Images
+on:
+  schedule:
+    - cron: '0 12 * * Mon' # Every Monday at 12:00 UTC
+  push:
+    branches: [main]
+    paths:
+      - packer/**
+      - .github/workflows/build_studio_images.yml
+  repository_dispatch:
+    types: [ helm-release ]
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - packer/**
+      - .github/workflows/build_studio_images.yml
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+jobs:
+  build-kh-klipper-docker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packer
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Workaround: https://github.com/docker/build-push-action/issues/461
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@79abd3f86f79a9d68a23c75a09a9a85889262adf
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      # Build and push Docker image with Buildx (don't push on PR)
+      # https://github.com/docker/build-push-action
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@eafaea8d0f5853934deece2ffa67af59d936562b
+        with:
+          context: .
+          file: packer/kh-klipper.dockerfile
+          push: true
+          tags:
+            ghcr.io/${{ github.repository }}/kh-klipper-cache:${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
+
+  create-virtualbox-runner:
+    environment: aws
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Standard CML setup
+        uses: iterative/setup-cml@v1
+        with:
+          version: latest
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: us-west-1
+          role-to-assume: arn:aws:iam::260760892802:role/studio-selfhosted-packer
+          role-duration-seconds: 3600
+      - name: Create Runner
+        env:
+          REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+        run: |
+          cml runner \
+          --name="studio-virtualbox-builder-${{ github.run_id }}" \
+          --cloud-metadata="actions_link=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          --cloud-startup-script=$(echo 'curl https://github.com/${{ github.actor }}.keys >> /home/ubuntu/.ssh/authorized_keys' | base64 -w 0) \
+          --single \
+          --labels=studio-selfhosted-virtualbox-builder \
+          --cloud=aws \
+          --cloud-image="studio-virtualbox-builder" \
+          --cloud-region=us-west-1 \
+          --cloud-type=c5n.metal \
+          --cloud-aws-security-group=sg-0da3ac1cdc286dd4e \
+          --cloud-aws-subnet=subnet-01c5f8c843b5c7759 \
+          --cloud-hdd-size 100
+
+  build-studio-aws-ami:
+    needs:
+      - build-kh-klipper-docker
+    environment: aws
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packer
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-west-1
+          role-to-assume: arn:aws:iam::260760892802:role/studio-selfhosted-packer
+          role-duration-seconds: 3600
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: "1.8.6"
+
+      - name: Run `packer init`
+        id: init
+        run: "packer init ./studio_ami.pkr.hcl"
+
+      - name: Run `packer fmt -diff`
+        id: fmt
+        run: "packer fmt -diff -recursive ."
+
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate ./studio_ami.pkr.hcl"
+
+      - name: Run `packer build`
+        id: build
+        run: "packer build ./studio_ami.pkr.hcl"
+        env:
+          PKR_VAR_skip_create_ami: ${{ github.event_name != 'pull_request' && 'false' || 'true' }}
+          PKR_VAR_kh_klipper_tag: ${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
+
+  build-studio-virtualbox-image:
+    needs:
+      - create-virtualbox-runner
+      - build-kh-klipper-docker
+    runs-on: [studio-selfhosted-virtualbox-builder]
+    environment: aws
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: packer
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: us-west-1
+          role-to-assume: arn:aws:iam::260760892802:role/studio-selfhosted-packer
+          role-duration-seconds: 3600
+
+      - name: CML Version Test
+        run: |
+          which cml
+          cml --version
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: "1.8.6"
+
+      - name: Run `packer init`
+        id: init
+        run: "packer init ./studio_virtualbox.pkr.hcl"
+
+      - name: Run `packer fmt -diff`
+        id: fmt
+        run: "packer fmt -diff -recursive ."
+
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate ./studio_virtualbox.pkr.hcl"
+
+      - name: Run `packer build`
+        id: build
+        run: "packer build ./studio_virtualbox.pkr.hcl"
+        env:
+          PKR_VAR_kh_klipper_tag: ${{ github.event_name != 'pull_request' && 'latest' || github.event.pull_request.head.sha }}
+          PKR_VAR_headless: true
+
+      - name: Zip artifacts
+        id: compress
+        run: gzip build/*
+
+      - name: Upload VirtualBox image to S3
+        id: upload
+        if:  ${{ github.event_name != 'pull_request' }}
+        run: |
+            aws s3 cp build/*.gz s3://iterative-studio-selfhosted/virtualbox/ --storage-class STANDARD_IA --region us-east-2

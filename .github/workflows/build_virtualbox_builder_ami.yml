@@ -1,24 +1,20 @@
-name: Build AMI
+name: Build Virtualbox builder AMI
 on:
-  push:
-    branches: [main]
-    paths:
-      - packer/**
-      - .github/workflows/build-ami.yml
-  repository_dispatch:
-    types: [ helm-release ]
+  workflow_dispatch:
   pull_request:
+    branches: [ "main" ]
     paths:
-      - packer/**
-      - .github/workflows/build-ami.yml
+      - packer/virtualbox_ami_builder.pkr.hcl
+      - packer/install_virtualbox.sh
+      - .github/workflows/build_virtualbox_ami.yml
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }} # Cancel in-progress jobs or runs for current workflow
-  cancel-in-progress: true
 permissions:
   contents: read
   id-token: write
+  packages: write
 jobs:
-  build-ami:
+  build-virtualbox-ami-builder:
     environment: aws
     runs-on: ubuntu-latest
     defaults:
@@ -40,15 +36,20 @@ jobs:
 
       - name: Run `packer init`
         id: init
-        run: "packer init ./studio-selfhosted.pkr.hcl"
+        run: "packer init ./virtualbox_ami_builder.pkr.hcl"
+
+      - name: Run `packer fmt -diff`
+        id: fmt
+        run: "packer fmt -diff -recursive ."
 
       - name: Run `packer validate`
         id: validate
-        run: "packer validate ./studio-selfhosted.pkr.hcl"
+        run: "packer validate ./virtualbox_ami_builder.pkr.hcl"
 
       - name: Run `packer build`
         id: build
-        run: "packer build ./studio-selfhosted.pkr.hcl"
+        run: "packer build ./virtualbox_ami_builder.pkr.hcl"
         env:
           PKR_VAR_skip_create_ami: ${{ github.event_name != 'pull_request' && 'false' || 'true' }}
+
 
