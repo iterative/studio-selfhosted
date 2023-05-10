@@ -68,7 +68,7 @@ jobs:
         uses: iterative/setup-cml@v1
         with:
           version: latest
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: us-west-1
           role-to-assume: arn:aws:iam::260760892802:role/studio-selfhosted-packer
