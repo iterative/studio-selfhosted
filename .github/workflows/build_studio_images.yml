@@ -1,12 +1,8 @@
 name: Build Studio Images
 on:
   schedule:
-    - cron: '0 12 * * Mon' # Every Monday at 12:00 UTC
-  push:
-    branches: [main]
-    paths:
-      - packer/**
-      - .github/workflows/build_studio_images.yml
+    - cron: '0 12 1 * *' # Once a month at 12:00 UTC
+  workflow_dispatch:
   repository_dispatch:
     types: [ helm-release ]
   pull_request:

@@ -8,7 +8,7 @@ packer {
 }
 
 variables {
-  image_name             = "studio-selfhosted"
+  image_name             = "studio-selfhosted-{{isotime `2006-01-02`}}"
   image_description      = "Iterative Studio Selfhosted - {{isotime `2006-01-02`}}"
   aws_build_region       = "us-west-1"
   aws_build_instance     = "c6a.large"
