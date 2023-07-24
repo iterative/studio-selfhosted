@@ -1,0 +1,88 @@
+name: Set current week in Project for PR
+on:
+  pull_request:
+    types:  [opened, reopened]
+    branches:
+      - main
+jobs:
+  set_current_week:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+        with:
+          app_id: ${{ secrets.PROJECT_ACTIONS_MANAGEMENT_APP_ID }}
+          private_key: ${{ secrets.PROJECT_ACTIONS_MANAGEMENT_APP_PEM }}
+
+      - name: Get project data
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          ORGANIZATION: iterative
+          PROJECT_NUMBER: 331
+        run: |
+          gh api graphql -f query='
+             query($org: String!, $number: Int!) {
+              organization(login: $org){
+                projectV2(number: $number) {
+                  id
+                  fields(first:20) {
+                    nodes {
+                      ... on ProjectV2Field {
+                        id
+                        name
+                      }
+                      ... on ProjectV2SingleSelectField {
+                        id
+                        name
+                        options {
+                          id
+                          name
+                        }
+                      }
+                      ... on ProjectV2IterationField {
+                        id
+                        name
+                        configuration {
+                          iterations {
+                            startDate
+                            id
+                            duration
+                            title
+                          }
+                          completedIterations {
+                            startDate
+                            id
+                            duration
+                            title
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }' -f org=$ORGANIZATION -F number=$PROJECT_NUMBER > project_data.json
+           echo "PROJECT_ID=$(jq -r '.data.organization.projectV2.id' project_data.json)" >> $GITHUB_ENV
+           echo "WEEK_FIELD_ID=$(jq -r '.data.organization.projectV2.fields.nodes[] | select(.name== "Week") | .id' project_data.json)" >> $GITHUB_ENV
+           echo "CURRENT_WEEK_ITERATION_ID=$(jq -r '.data.organization.projectV2.fields.nodes[]  | select(.name=="Week").configuration.iterations[0].id' project_data.json)" >> $GITHUB_ENV
+
+      - name: Get PR Card
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          PR_ID: ${{ github.event.pull_request.node_id }}
+        run: |
+          gh project item-list --owner iterative 331 -L 3000 --format=json > items.json
+          echo "PR_CARD_ID=$(jq -r '.items[] | select(.content.number==${{ github.event.number }} and .content.repository=="${{ github.repository }}") | .id' items.json)" >> $GITHUB_ENV
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: gh_output
+          path: ./*.json
+          retention-days: 1
+
+      - name: Set week for PR
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          gh project item-edit --id $PR_CARD_ID --field-id $WEEK_FIELD_ID --iteration-id $CURRENT_WEEK_ITERATION_ID --project-id $PROJECT_ID
