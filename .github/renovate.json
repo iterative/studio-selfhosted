@@ -1,15 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base"
-  ],
-  "schedule": [
-    "before 12am on Wednesday"
-  ],
+  "extends": ["config:recommended"],
+  "schedule": ["before 12am on Wednesday"],
   "assigneesFromCodeOwners": true,
-  "labels": [
-    "dependencies"
-  ],
+  "labels": ["dependencies"],
   "rebaseWhen": "conflicted",
   "configMigration": true
 }
