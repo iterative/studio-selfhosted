@@ -15,8 +15,8 @@ variables {
   disk_size         = "50000"
   headless          = false
   iso_path_external = "https://releases.ubuntu.com/releases/jammy"
-  iso_file          = "ubuntu-22.04.2-live-server-amd64.iso"
-  iso_checksum      = "sha256:5e38b55d57d94ff029719342357325ed3bda38fa80054f9330dc789cd2d43931"
+  iso_file          = "ubuntu-22.04.3-live-server-amd64.iso"
+  iso_checksum      = "sha256:a4acfda10b18da50e2ec50ccaf860d7f20b389df8765611142305c0e911d16fd"
   keep_registered   = false
   packer_cache_dir  = "${env("PACKER_CACHE_DIR")}"
   skip_export       = false
