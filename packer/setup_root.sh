@@ -12,7 +12,7 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 # Install K3s - script uploaded with packer
-export K3S_VERSION="v1.25.7+k3s1"
+export K3S_VERSION="v1.29.4+k3s1"
 export K3S_KUBECONFIG_MODE="644"
 export INSTALL_K3S_VERSION="$K3S_VERSION"
 export INSTALL_K3S_SKIP_START="true"

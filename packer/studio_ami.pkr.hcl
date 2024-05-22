@@ -1,7 +1,7 @@
 packer {
   required_plugins {
     amazon = {
-      version = ">= 1.0.0"
+      version = ">= 1.3.2"
       source  = "github.com/hashicorp/amazon"
     }
   }
@@ -10,7 +10,7 @@ packer {
 variables {
   image_name             = "studio-selfhosted-{{isotime `2006-01-02`}}"
   image_description      = "Iterative Studio Selfhosted - {{isotime `2006-01-02`}}"
-  aws_build_region       = "us-west-1"
+  aws_build_region       = "us-east-1"
   aws_build_instance     = "c6a.large"
   aws_build_ubuntu_image = "*ubuntu-*-22.04-amd64-server-*"
   skip_create_ami        = true
