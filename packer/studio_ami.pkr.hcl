@@ -8,7 +8,7 @@ packer {
 }
 
 variables {
-  image_name             = "studio-selfhosted-{{isotime `2006-01-02`}}"
+  image_name             = "studio-selfhosted"
   image_description      = "Iterative Studio Selfhosted - {{isotime `2006-01-02`}}"
   aws_build_region       = "us-east-1"
   aws_build_instance     = "c6a.large"
@@ -88,9 +88,8 @@ source "amazon-ebs" "source" {
   source_ami   = data.amazon-ami.ubuntu.id
   ssh_username = "ubuntu"
 
-
   force_delete_snapshot = !var.skip_create_ami
-  force_deregister      = !var.skip_create_ami
+#   force_deregister      = !var.skip_create_ami
 
   tags            = local.aws_tags
   run_tags        = local.aws_tags
